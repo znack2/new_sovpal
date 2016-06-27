@@ -1,15 +1,17 @@
+.git/
+.idea/
 vendor/
 node_modules/
-
-# Laravel 4 specific
-bootstrap/compiled.php
 app/storage/
-
-# Laravel 5 & Lumen specific
 bootstrap/cache/
+bootstrap/compiled.php
+
 .env.*.php
 .env.php
 .env
+Homestead.yaml
+Homestead.json
+*.sublime-project
+*.sublime-workspace
+*.DS_Store
 
-# Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
-.rocketeer/

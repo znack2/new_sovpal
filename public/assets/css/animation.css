@@ -1,0 +1,414 @@
+
+*
+{
+    -webkit-transition: all .15s;
+       -moz-transition: all .15s;
+        -ms-transition: all .15s;
+         -o-transition: all .15s;
+            transition: all .15s;
+}
+
+
+@-moz-keyframes flyaway
+{
+    0%
+    {
+        top: 13px;
+        right: 25px;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    5%
+    {
+        top: 13px;
+        right: 0;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    20%
+    {
+        top: 13px;
+        right: -130px;
+
+        height: 45px;
+
+        -webkit-transform: rotate(-20deg);
+           -moz-transform: rotate(-20deg);
+            -ms-transform: rotate(-20deg);
+             -o-transform: rotate(-20deg);
+                transform: rotate(-20deg);
+    }
+    40%
+    {
+        top: -40px;
+        right: -280px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+
+        opacity: 1;
+
+        -ms-filter: none;
+            filter: none;
+    }
+    100%
+    {
+        top: -200px;
+        right: -1000px;
+
+        height: 0;
+
+        -webkit-transform: rotate(60deg);
+           -moz-transform: rotate(60deg);
+            -ms-transform: rotate(60deg);
+             -o-transform: rotate(60deg);
+                transform: rotate(60deg);
+
+        opacity: 0;
+
+        -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+            filter: alpha(opacity=0);
+    }
+}
+@-webkit-keyframes flyaway
+{
+    0%
+    {
+        top: 13px;
+        right: 25px;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    5%
+    {
+        top: 13px;
+        right: 0;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    20%
+    {
+        top: 13px;
+        right: -130px;
+
+        height: 45px;
+
+        -webkit-transform: rotate(-20deg);
+           -moz-transform: rotate(-20deg);
+            -ms-transform: rotate(-20deg);
+             -o-transform: rotate(-20deg);
+                transform: rotate(-20deg);
+    }
+    40%
+    {
+        top: -40px;
+        right: -280px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+
+        opacity: 1;
+
+        -ms-filter: none;
+            filter: none;
+    }
+    100%
+    {
+        top: -200px;
+        right: -1000px;
+
+        height: 0;
+
+        -webkit-transform: rotate(60deg);
+           -moz-transform: rotate(60deg);
+            -ms-transform: rotate(60deg);
+             -o-transform: rotate(60deg);
+                transform: rotate(60deg);
+
+        opacity: 0;
+
+        -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+            filter: alpha(opacity=0);
+    }
+}
+@-o-keyframes flyaway
+{
+    0%
+    {
+        top: 13px;
+        right: 25px;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    5%
+    {
+        top: 13px;
+        right: 0;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    20%
+    {
+        top: 13px;
+        right: -130px;
+
+        height: 45px;
+
+        -webkit-transform: rotate(-20deg);
+           -moz-transform: rotate(-20deg);
+            -ms-transform: rotate(-20deg);
+             -o-transform: rotate(-20deg);
+                transform: rotate(-20deg);
+    }
+    40%
+    {
+        top: -40px;
+        right: -280px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+
+        opacity: 1;
+
+        -ms-filter: none;
+            filter: none;
+    }
+    100%
+    {
+        top: -200px;
+        right: -1000px;
+
+        height: 0;
+
+        -webkit-transform: rotate(60deg);
+           -moz-transform: rotate(60deg);
+            -ms-transform: rotate(60deg);
+             -o-transform: rotate(60deg);
+                transform: rotate(60deg);
+
+        opacity: 0;
+
+        -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+            filter: alpha(opacity=0);
+    }
+}
+@keyframes flyaway
+{
+    0%
+    {
+        top: 13px;
+        right: 25px;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    5%
+    {
+        top: 13px;
+        right: 0;
+
+        height: 30px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+    }
+    20%
+    {
+        top: 13px;
+        right: -130px;
+
+        height: 45px;
+
+        -webkit-transform: rotate(-20deg);
+           -moz-transform: rotate(-20deg);
+            -ms-transform: rotate(-20deg);
+             -o-transform: rotate(-20deg);
+                transform: rotate(-20deg);
+    }
+    40%
+    {
+        top: -40px;
+        right: -280px;
+
+        -webkit-transform: rotate(10deg);
+           -moz-transform: rotate(10deg);
+            -ms-transform: rotate(10deg);
+             -o-transform: rotate(10deg);
+                transform: rotate(10deg);
+
+        opacity: 1;
+
+        -ms-filter: none;
+            filter: none;
+    }
+    100%
+    {
+        top: -200px;
+        right: -1000px;
+
+        height: 0;
+
+        -webkit-transform: rotate(60deg);
+           -moz-transform: rotate(60deg);
+            -ms-transform: rotate(60deg);
+             -o-transform: rotate(60deg);
+                transform: rotate(60deg);
+
+        opacity: 0;
+
+        -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+            filter: alpha(opacity=0);
+    }
+}
+@-moz-keyframes bounce-in
+{
+    0%
+    {
+        padding-right: 30px;
+    }
+    40%
+    {
+        padding-right: 6px;
+    }
+    50%
+    {
+        padding-left: 30px;
+    }
+    100%
+    {
+        padding-left: 6px;
+    }
+}
+@-webkit-keyframes bounce-in
+{
+    0%
+    {
+        padding-right: 30px;
+    }
+    40%
+    {
+        padding-right: 6px;
+    }
+    50%
+    {
+        padding-left: 30px;
+    }
+    100%
+    {
+        padding-left: 6px;
+    }
+}
+@-o-keyframes bounce-in
+{
+    0%
+    {
+        padding-right: 30px;
+    }
+    40%
+    {
+        padding-right: 6px;
+    }
+    50%
+    {
+        padding-left: 30px;
+    }
+    100%
+    {
+        padding-left: 6px;
+    }
+}
+@keyframes bounce-in
+{
+    0%
+    {
+        padding-right: 30px;
+    }
+    40%
+    {
+        padding-right: 6px;
+    }
+    50%
+    {
+        padding-left: 30px;
+    }
+    100%
+    {
+        padding-left: 6px;
+    }
+}
+
+
+/*    ul.nav li.dropdown:hover > ul.dropdown-menu {
+          display: block;    
+      }*/
+
+#send_button:hover svg
+{
+    transition: transform .15s;
+    transform: rotate(10deg);
+}
+#send_button svg
+{
+    transition: transform .15s;
+}
+#send_button.clicked
+{
+    animation: bounce-in .3s;
+}
+#send_button.clicked svg
+{
+    animation: flyaway 1.3s linear;
+}
