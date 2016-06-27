@@ -6,6 +6,7 @@ app/storage/
 bootstrap/cache/
 bootstrap/compiled.php
 
+.workflow
 .env.*.php
 .env.php
 .env

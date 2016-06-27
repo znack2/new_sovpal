@@ -21,6 +21,11 @@ use Route;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /*
+    *
+    * TODO CACHE
+    *
+    */
     public function boot(Guard $auth)
     {
         view()->composer('pages._page', function ($view) {
