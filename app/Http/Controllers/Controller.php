@@ -26,6 +26,7 @@ use \App\Models\_partials\Address;
 //use App\Events\UserEvent;
 
 use App\Services\Mailer\Mailer;
+use App\Http\Requets\MailRequest;
 
 
 /*********************************************************************
@@ -64,28 +65,18 @@ class Controller extends BaseController
  *  
  *
  */
-    public function sendMail(Request $request,$template,$subject)
+    public function sendMail(MailRequest $request,$template,$subject)
         {
-            logger()->info(__METHOD__);
-
-            //contact form
-            //empty index - subscribe
-            //empty profile - subscribe
-            //faq form
-
-        try {
-            $this->validate($request, [
-               'name'       => 'required|min:3',
-               'email'      => 'required|email|max:255',
-               'message'    => 'required'
-           ]);
-           $requestData  = $request->only('name','email','message');
-           $this->mail->sendMail($template, $this->currentUser, $subject);           
-           return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+            try {
+                if (Session::token() !== $request['_token']) {
+                    flash('Hack','error'); 
+                    return redirect()->back();
+                }
+                $this->mail->sendTo();         
+            } catch (MailException $e) {
+                flash('NotFound','error'); 
+                return redirect()->back();
+            }
         }  
 /**
  *
@@ -95,11 +86,15 @@ class Controller extends BaseController
  */
     public function select(Request $request)
         {
-            logger()->info(__METHOD__);
-            //  $elements = DB::table('elements')->whereHas('categories',function( $query ) use ($request){
-            //     $query->where('id',$request->input('category_id'))->orderBy('name')->lists('name','id')
-            // });
-            // return Response::make($elements);
-            // return Response::json($elements);
+            if(category){
+                //  $data = DB::table('category')->whereHas('categories',function( $query ) use ($request){
+                //     $query->where('id',$request->input('category_id'))->orderBy('name')->lists('name','id')
+                // });
+            } else {
+                //  $data = DB::table('elements')->whereHas('categories',function( $query ) use ($request){
+                //     $query->where('id',$request->input('category_id'))->orderBy('name')->lists('name','id')
+                // });
+            }
+            // return Response::make/json($data);
         }
 }

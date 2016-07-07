@@ -3,41 +3,40 @@
         <div class="col-md-3">
             <h5 class="size16 bold upper">{{trans('sovpal.AboutService')}}</h5>
             <ul>
-                {{--<li><a class="size12 upper" href="{{ route('pages',['page'=>'about']) }}">{{trans('sovpal.pageabout')}}</a></li>--}}
-                {{--<li><a class="size12 upper" href="#">{{trans('sovpal.pagejob')}}</a></li>--}}
-                {{--<li><a class="size12 upper" href="#">{{trans('sovpal.pagepress')}}</a></li>--}}
-                {{--<li><a class="size12 upper" href="#">{{trans('sovpal.pageblog')}}</a></li>--}}
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'how']) }}">{{trans('sovpal.pagehow')}}</a></li>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'faq']) }}">{{trans('sovpal.pagefaq')}}</a></li>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'contacts']) }}">{{trans('sovpal.pagecontacts')}}</a></li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'about']),null,'pageabout') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'job']),null,'pagejob') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'press']),null,'pagepress') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'blog']),null,'pageblog') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'how']),null,'Login') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'faq']),null,'pagefaq') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'contacts']),null,'pagecontacts') }}</li>
             </ul>
         </div>
 
         <div class="col-md-3">
             <h5 class="size16 bold upper">{{trans('sovpal.UseSovpal')}}</h5>
             <ul>
-                <li><a class="size12 upper" href="{{ route('auth.login') }}"> {{trans('sovpal.Login')}}</a></li>
-                <li><a class="size12 upper" href="{{ route('auth.register') }}"> {{trans('sovpal.SignUp')}}</a></li>
-                {{--<li><a class="size12 upper" href="#">{{trans('sovpal.pagepremium')}}</a></li>--}}
+                <li class="size12 upper">{{ link(route('auth.login'),null,'Login') }}</li>
+                <li class="size12 upper">{{ link(route('auth.register'),null,'SignUp') }}</li>
+                <li class="size12 upper">{{ link(route('auth.premium'),null,'pagepremium') }}</li>
             </ul>
         </div>
 
         <div class="col-md-3">
             <h5 class="size16 bold upper">{{trans('sovpal.Extras')}}</h5>
             <ul>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'security']) }}">{{trans('sovpal.pageprivacy')}}</a></li>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'terms']) }}">{{trans('sovpal.pageterms')}}</a></li>
-                {{--<li><a class="size12 upper" href="{{ route('pages',['page'=>'support']) }}">{{trans('sovpal.pagesupport')}}</a></li>--}}
+                <li class="size12 upper">{{ link(route('pages',['page'=>'security']),null,'pageprivacy') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'terms']),null,'pageterms') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'support']),null,'pagesupport') }}</li>
             </ul>
         </div>
 
         <div class="col-md-3">
             <h5 class="size16 bold upper">{{trans('sovpal.MoreResources')}}</h5>
             <ul>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'owners']) }}">{{trans('sovpal.pageowners')}}</a></li>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'designers']) }}"> {{trans('sovpal.pagedesigners')}}</a></li>
-                <li><a class="size12 upper" href="{{ route('pages',['page'=>'shops']) }}">{{trans('sovpal.pageshops')}}</a></li>
-                {{--<li><a class="size12 upper" href="#">{{trans('sovpal.pagebuilders')}}</a></li>--}}
+                <li class="size12 upper">{{ link(route('pages',['page'=>'owners']),null,'pageowners') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'designers']),null,'pagedesigners') }}</li>
+                <li class="size12 upper">{{ link(route('pages',['page'=>'shops']),null,'pageshops') }}</li>
             </ul>
         </div>
     </div>

@@ -1,4 +1,4 @@
- @include('......forms._basic.default',
+ @include('forms._basic.default',
 ['model' => 'action','method' => 'add','type'=>'modal','model_id'=>$data->id,'item'=>$data])
 
 <a type="button" data-toggle="modal" data-target="#action_add_modal">

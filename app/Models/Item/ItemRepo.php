@@ -16,6 +16,8 @@ use App\Models\Item\ItemInterface;
 class ItemRepo extends AbstractRepo implements ItemInterface 
 {
     protected $element;
+    protected $_price;
+
     
     public function __construct(Item $item,Element $element)
         {
@@ -39,10 +41,8 @@ class ItemRepo extends AbstractRepo implements ItemInterface
  *
  */
 
-    public function storeItem($item = null)
+    public function storeItem($data, $item = null)
         {
-          $data = $this->filters;
-
           DB::beginTransaction();
        
           try {
@@ -53,14 +53,6 @@ class ItemRepo extends AbstractRepo implements ItemInterface
               $this->assign_Tags($item,$data);
               $this->assign_Element($item,$data);
               $item->push();
-              return 'Item' . $item->title .' successfully has been'. isset($item) ? 'updated' : 'stored';
-          } catch(ValidationException $e)
-          {
-              DB::rollback();
-              return redirect()
-                    ->back()
-                    ->withErrors( $e->getErrors() )//'error' => $e->getMessage()
-                    ->withInput();
           } catch(\Exception $e)
           {
               DB::rollback();
@@ -163,5 +155,31 @@ class ItemRepo extends AbstractRepo implements ItemInterface
         $this->removeModel($item,'element',$element);
         $this->addModel($item,'element',$request->input('element'));
       }    
+    }
+
+
+    public function getPrice($format = false)
+    {
+        if(!isset($this->_price)){
+
+            //todo calculate product options
+
+            $this->_price = $this->product()->first()->price;
+
+        }
+
+        return $format ? price($this->_price) : $this->_price;
+    }
+
+
+    public function getSubtotal($format = false)
+    {
+        if(!isset($this->_subtotal)){
+
+            $this->_subtotal = $this->getPrice() * $this->qty;
+
+        }
+
+        return $format ? price($this->_subtotal) : $this->_subtotal;
     }
 }

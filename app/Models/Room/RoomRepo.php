@@ -1,14 +1,13 @@
 <?php namespace App\Models\Room;
 
-use App\Exceptions\Exceptions;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Room\Room;
 use App\Models\Room\RoomInterface;
 use App\Models\Filters\AbstractRepo;
+use DB;
 
-// RepositoryFoundException
 /*********************************************************************
 
                 ( Room )
@@ -33,10 +32,8 @@ class RoomRepo extends AbstractRepo implements RoomInterface
  *  - set Room Info
  *
  */
-    public function storeRoom($room = null)
+    public function storeRoom($data, $room = null)
       {
-          $data = $this->filters;
-
           DB::beginTransaction();
        
           try {
@@ -51,21 +48,11 @@ class RoomRepo extends AbstractRepo implements RoomInterface
               $this->set_Image($room, $data);
               $this->set_Private($room);
               $room->push();
-              return 'Room' . $room->title .' successfully has been'. isset($room) ? 'updated' : 'stored';//completed
-          } catch(ValidationException $e)
-          {
-              DB::rollback();
-              return redirect()
-                    ->back()
-                    ->withErrors( $e->getErrors() )//'error' => $e->getMessage()
-                    ->withInput();
+              return true;
           } catch(\Exception $e)
           {
               DB::rollback();
               throw $e;
-          } catch( Exception $e)
-          {
-            return 'You can not update group if user already join';
           }
           DB::commit();
       }

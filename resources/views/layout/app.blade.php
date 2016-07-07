@@ -11,25 +11,25 @@
 <body>
 {{--<div class="loader"></div>--}}
 
-    <header>
-        <nav class="navbar navbar-default navbar-fixed-top" id="header" role="navigation">
+<header>
+    <nav class="navbar navbar-default navbar-fixed-top" id="header" role="navigation">
 
-             <div id="flash_message" style="display: none;z-index: 9999;background-color:#ED742A;color:#fff;width:100%;margin:0;" class="text-center bold alert alert-{{ Session::get('flash.style') }}" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <strong>{{ trans('Beta version!') }}</strong>
-            </div>
+         <div id="flash_message" style="display: none;z-index: 9999;background-color:#ED742A;color:#fff;width:100%;margin:0;" class="text-center bold alert alert-{{ Session::get('flash.style') }}" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>{{ trans('Beta version!') }}</strong>
+        </div>
 
-            <div class="container">
-                <div class="visible-xs navbar-header">
-                    @include('layout.mobile_header')
-                </div>
-                @include('layout.header')
+        <div class="container">
+            <div class="visible-xs navbar-header">
+                @include('layout.mobile_header')
             </div>
-        </nav>
-        @if(isset($page) && $page == 'landing')
-            @include('pages.intro')
-        @endif
-    </header>
+            @include('layout.header')
+        </div>
+    </nav>
+    @if(isset($page) && $page == 'landing')
+        @include('pages.intro')
+    @endif
+</header>
 
 
 <!-- Errors/Message -->
@@ -40,9 +40,7 @@
     @foreach (session('flash_message') as $message)
         <div class="text-center alert alert-{{ $message->style }}" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-
                   <strong>{{ $message->title }}</strong>
-
                     @if (count($errors) > 1)
                        @foreach ($errors->all() as $error)
                            <li>{{ $error }}.</li><br><br>

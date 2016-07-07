@@ -17,12 +17,17 @@ use App\Http\Requests\Auth\RegistrationRequest;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 
+use App\Services\OauthService;
+use Socialite;
+use App\Exceptions\SocialAuthException;
+
 class AuthController extends Controller
 {
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     protected $loginPath = '/'; 
-    protected $loginBy = strpos($login, '@') > 1 ? 'email' : 'username';
+    protected $loginBy = strpos(Request::input('login'), '@') > 1 ? 'email' : 'username';
+    protected $credentials = [$loginBy => $request->input('login'), 'password' => $request->input('password')];
 
     public function __construct(User $user)
       {
@@ -31,12 +36,9 @@ class AuthController extends Controller
 /**
  *
  *  Registration form 
- *  
- *  TODO:
- *  - oauth show just extra input 
  *
  */
-    public function Register()
+    public function getRegister()
         {
             $provider = Session::has('provider');
 
@@ -48,8 +50,7 @@ class AuthController extends Controller
                 'type'    => '',
                 'provider'=> $provider
             ];
-
-            return view('pages._form',$form);
+            return view('pages._form',compact('form'));
         }
 /**
  *
@@ -65,82 +66,76 @@ class AuthController extends Controller
                 'button' => 'confirm',
                 'type'   => 'panel',
             ];
-             return view('pages._form',$form);
+             return view('pages._form',compact('form'));
         }
-/**
- *
- *  login User
- *  
- */
-    public function postLogin(LoginRequest $request)
-      {
-        $loginBy = strpos($request->input('email'), '@') > 1 ? 'email' : 'username';
-        $validate = Auth::attempt([$loginBy => $request->input('email'), 'password' => $request->input('password')],$request->has('remember'));
-      // check if user not verified show message if yes login
-            try {
-                $this->model->checkBanned();
-                $this->model->update_last_login();
-                flash(trans('sovpal.flash.Login'),'success');
-                return redirect()
-                      ->intended($this->redirectPath());
-            } catch (\Exception $e) {
-                $message = sprintf("Error doing something %s", $e->getMessage());
-                Log::debug($message);
-                flash(trans('sovpal.flash.LoginError'),'error');
-                return redirect($this->loginPath())
-                      ->withInput($request->only('email', 'remember'))
-                      ->withErrors(['email' => $this->getFailedLoginMessage()]);
-            }
-      }
 /**
  *
  *  create new User
  *
  */
-    public function postRegistr(RegistrationRequest $request)
+    public function postRegister(RegistrationRequest $request)
       {
         try {
-            $this->model->createUser($request->all());
-            $this->sendMail($request, 'layout.emails.subscribe', 'Complete your registration');
-            flash(trans('sovpal.flash.verify'),'info');
+            $user = $this->model->createUser($request->all());
+            $this->mail->send_Activation($user);
+            flash('Mail has been send','success');
             return redirect($this->redirectPath());
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
+        } catch (MailException $e) {
+            flash('Mail has not been send','error');
+            return redirect($this->redirectPath());
         }
       }
 /**
  *
  *  confirmation 
- *  TODO:
- *  check verify code if expire or not valid show error( send mail again )
+ *  
  */
-    public function postConfirmation(Request $request)
+    public function postConfirmation(ActivateRequest $request,$code)
       {
           try {
-            $this->model->activateUser($request->input('code'));
-            flash(trans('sovpal.flash.Confirm'),'success');
-            return redirect()->route('groups');
+            $user = $this->model->activateUser($code);
+            flash('Confirm','success');
+            Auth::login($user);
+            return redirect($this->redirectPath());
         } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
+            flash('Confirm','error');
+            return redirect($this->redirectPath());
         }
       }
 /**
- *
- *  Logout 
- *
- */
-    public function Logout()
+*
+*  social login User
+*  
+*/
+  public function postSocialLogin($provider)
+    {
+          if($provider){
+              try {
+                  Socialite::with($provider)->redirect();
+              } catch (SocialAuthException $e) {
+                  flash('Confirm','success');
+                  return redirect()->intended($this->redirectPath());
+              }
+          } else {
+              return redirect()->intended($this->redirectPath());
+          }
+    }
+/**
+*
+*  login User
+*  
+*/
+  public function callback(OauthService $oauth, $provider)
       {
-        try {
-            Auth::logout();
-            flash(trans('sovpal.flash.Logout'),'success');
-            return redirect('/')->with('alert', 'You are logged out.');
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
+          $user = Socialite::driver($provider)->user();
+          $user->getId();
+          $user->getNickname();
+          $user->getName();
+          $user->getEmail();
+          $user->getAvatar();
+          $user = $oauth->createOrGetUser($driver, $provider);
+
+          $this->auth->login($user, true);
+          return redirect()->intended($this->redirectPath());
       }
 }

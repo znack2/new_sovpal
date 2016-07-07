@@ -46,3 +46,6 @@ class Group extends Base
     public function user(){        return $this->belongsTo(User::class);}
     public function item(){        return $this->belongsTo(Item::class);}  
 }
+
+
+add automatically $group->getMembers();

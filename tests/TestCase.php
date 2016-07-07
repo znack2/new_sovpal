@@ -1,4 +1,4 @@
-<?php
+<?php namespace App\Tests;
 
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -6,8 +6,14 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Contracts\Console\Kernel;
 use Carbon\Carbon;
 
+use app\Traits\UiTest;
+use app\Traits\FlashTest;
+use app\Traits\SignUpUser;
+
 abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
+    use UiTest,FlashTest;
+    
 	use DatabaseTransactions;
     // use WithoutMiddleware;
     // use DatabaseMigrations;
@@ -24,14 +30,13 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
     public function setUp()
     {
         parent::setUp();
-        // reload session
-        // \Laravel\Session::load();
+        // Session::load();
         Artisan::call('migrate');
         // Artisan::call('migrate:reset');
         // Artisan::call('db:seed', array('--class'=>'TestingDatabaseSeeder'));
         Mail::pretend(true);
           // View::addLocation(dirname(__DIR__).'/fixtures/views');
-        $this->mock('Way\Storage\Post\PostRepositoryInterface');
+        // $this->mock('Way\Storage\Post\PostRepositoryInterface');
     }
 
     public function tearDown()
@@ -42,12 +47,75 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     public function mock($class)
       {
-          $repo = Mockery::mock('PostInterface');
-          $repo->shouldReceive('getAll')->once()->andReturn('foo');
-          $this->app->instance('PostInterface', $repo);
-          return $mock;
+          // $repo = Mockery::mock('PostInterface');
+          // $repo->shouldReceive('getAll')->once()->andReturn('foo');
+          // $this->app->instance('PostInterface', $repo);
+          // return $mock;
       }
+
+    private function visit_as_User_type($type,$page)
+        {
+            if($type == 'Owner'){
+                $this->createOwner();
+            } elseif($type == 'Shop'){
+                $this->createShop();
+            } elseif($type == 'Profi'){
+                $this->createProfi();
+            }
+            $this->signUp();
+            $this->visit($page);
+        }
 }
+
+
+
+
+
+// 1)controler-flash
+// 2)mail/social/payment
+// 3)repo/filter
+// 4)ui design
+
+
+//I am owner and I want to add item that other can order and give me money for it
+
+//unit
+//given - I am login (given factory or request) 
+//and - there is "my profile" (check method)
+//when - I go to "my items" 
+//and - I create new Item (check method)
+//then - I should be able to see it.(assert)
+
+//acceptance
+//given (url)
+//when (actions)
+//then (ui elements)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //         $json = json_decode( $response->getContent(), true );
     //     $params = ['site' => 'unittest', 'resource' => 'product', 'id' => '0'];
@@ -105,38 +173,17 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
 
 // ==========================================================
 
-
-    //  public function call($destination, $parameters = [, $method = 'GET')
+    // public function __call($method, $args)
     // {
-    //     $old_method = Request::foundation()->getMethod();
-    //     \Laravel\Request::foundation()->setMethod($method);
-    //     $response = Controller::call($destination, $parameters);
-    //     Request::foundation()->setMethod($old_method);
-    //     return $response;
-    // }
-
-    // public function get($destination, $parameters = [])
-    // {
-    //     return $this->call($destination, $parameters, 'GET');
-    // }
-
-
-    // public function post($destination, $post_data, $parameters = [])
-    // {
-    //     //clear request
-    //     $request = \Laravel\Request::foundation()->request;
     //     foreach ($request->keys() as $key)
     //     {
     //         $request->remove($key);
     //     }
+            // $request = Request::foundation()->request;
+    //     Request::foundation()->getMethod();
+    //     Request::foundation()->setMethod($method);
+            // Request::foundation()->request->add($args);
 
-    //     \Laravel\Request::foundation()->request->add($post_data);
-    //     return $this->call($destination, $parameters, 'POST');
-    // }
-
-
-    // public function __call($method, $args)
-    // {
     //     if (in_array($method, ['get', 'post', 'put', 'patch', 'delete']))
     //     {
     //         return $this->call($method, $args[0]);

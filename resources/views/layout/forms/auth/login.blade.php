@@ -2,38 +2,30 @@
 <div class="row">
    <a class="white_c size14 col-xs-6" href="{{ route('auth.register') }}">{{ trans('sovpal.SignUp') }}</a>
     <p class="white_c size18 col-xs-6">{{ trans('sovpal.forms.PleaseLogIn') }}</p>
-    {{--<p class="text-center size12"></p>--}}
 </div>
     <div class="clearfix"></div>
-    {{--<div class="col-xs-12 form-group">--}}
-        {{--<div class="col-xs-6">--}}
-            {{--<a href="{{ route('auth.oauth',['provider'=>'facebook']) }}" class="btn-round white_c text-center">--}}
-                {{--<i class="fa fa-facebook"></i>--}}
-            {{--</a>--}}
-        {{--</div>--}}
-        {{--<div class="col-xs-6">--}}
-            {{--<a href="{{ route('auth.oauth',['provider'=>'vkontakte']) }}" class="btn-round white_c text-center">--}}
-                {{--<i class="fa fa-vk"></i>--}}
-            {{--</a>--}}
-        {{--</div>--}}
-    {{--</div>--}}
-    {{--<div class="clearfix"></div>--}}
+    <div class="col-xs-12 form-group">
+        <div class="col-xs-4 btn-round white_c text-center">{{ link('auth.oauth',['provider'=>'vkontakte'], '<i class="fa fa-vk"></i>') }} </div> 
+        <div class="col-xs-4 btn-round white_c text-center">{{ link('auth.oauth',['provider'=>'facebook'], '<i class="fa fa-facebook"></i>') }} </div> 
+        <div class="col-xs-4 btn-round white_c text-center">{{ link('auth.oauth',['provider'=>'ok'], '<i class="fa fa-ok"></i>') }} </div> 
+    </div>
+    <div class="clearfix"></div>
 
-    {{--<p class="text-center size12">{{ trans('sovpal.forms.OrNormalEnter') }}</p>--}}
+    <p class="text-center size12">{{ trans('sovpal.forms.OrNormalEnter') }}</p>
 </div>
 
 <div class="form-group">
         <label for="email" class="sr-only">{{ trans('sovpal.forms.E-Mail') }}</label>
         <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="email" name="email" class="form-control" type="email"
         placeholder="{{ old( 'email', trans('sovpal.forms.E-Mail') ) }}" required>
-        {{$errors->first('email' ,'<li class="error">:message</li>')}}
+        {{ $errors->first('email' ,'<li class="error">:message</li>')}}
 </div>
 
 <div class="form-group">
     <label class="sr-only" for="password">{{ trans('sovpal.forms.Password') }}</label>
     <input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="password" name="password" class="form-control"
      placeholder="{{ trans('sovpal.forms.Password') }}" required>
-     {{$errors->first('password' ,'<li class="error">:message</li>')}}
+     {{ $errors->first('password' ,'<li class="error">:message</li>')}}
 </div>
 
 <div class="hidden-xs form-group">
@@ -42,8 +34,6 @@
         <label for="remember" class="css-label">{{ trans('sovpal.forms.RememberMe') }}</label>
     </div>
 </div>
-
-
 
 <div class="clearfix"></div>
 

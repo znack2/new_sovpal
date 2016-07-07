@@ -55,4 +55,4 @@ class Item extends Base
 
     public function users(){return          $this->belongsToMany(User::class)->withTimestamps()->latest('pivot_updated_at');}
 }
-
+add groups automatically!

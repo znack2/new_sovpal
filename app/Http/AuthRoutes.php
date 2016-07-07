@@ -2,28 +2,30 @@
 
 Route::group(['prefix'=>'auth'], function()
 {
-    Route::post('subscribe',        'AuthController@postSubscribe') ->name( 'auth.subscribe' )->middleware('guest');
+    Route::group(['middleware' => 'guest'], function ()
+    {       
+        Route::get('registration',                     'AuthController@getRegister')        ->name( 'register_form' )
+        Route::get('registration/confirmation/{code}', 'AuthController@getConfirmation')    ->name( 'confirm_form' )
 
-    Route::get('registration',      'AuthController@register')      ->name( 'auth.register' )->middleware('guest');
-    Route::post('registration',     'AuthController@postRegistr')   ->name( 'auth.register' )->middleware('guest');
+        Route::post('registration',                    'AuthController@postRegister')       ->name( 'register' )
+        Route::post('registration/confirmation',       'AuthController@postConfirmation')   ->name( 'confirm' )
+        Route::post('login',                           'AuthController@postLogin')          ->name( 'login' )
+        Route::post('login/{provider?}',               'AuthController@postSocialLogin')    ->name( 'oauth' )
+        Route::post('login/callback/{provider?}',      'AuthController@callback')           ->name( 'callback' )
+    });
 
-    Route::get('registration/almost-done', 				'AuthController@getConfirmation') ->name( 'auth.confirm' )->middleware('guest');
-    Route::get('registration/confirmation/{code}', 		'AuthController@postConfirmation')->name( 'auth.confirm' )->middleware('guest');
+    Route::group(['prefix'=>'auth','middleware' => 'auth'], function ()
+    {       
+        Route::get('logout',                   'AuthController@Logout')         ->name( 'logout' );
+        //type email to get link for reset password or remind password
+        Route::get('password/email',           'PasswordController@getEmail')   ->name( 'email_require_form' )
+        //form for new password
+        Route::get('password/reset/{token}',   'PasswordController@getReset')   ->name( 'reset_form' )
 
-    Route::get('login/{provider?}',           'AuthController@redirectToProvider')     ->name( 'auth.oauth' )->middleware('guest');
-    Route::get('login/callback/{provider?}',  'AuthController@handleProviderCallback') ->name( 'auth.oauth' )->middleware('guest');
-
-    Route::post('login',            'AuthController@postLogin')     ->name( 'auth.login' )->middleware('guest');
-    Route::get('logout',            'AuthController@Logout')        ->name( 'auth.logout' );
-
-
-    Route::get('password/email',        'PasswordController@getEmail')      ->name( 'auth.email_require' )->middleware('auth');
-    Route::post('password/email',       'PasswordController@postEmail')     ->name( 'auth.email_require' )->middleware('auth');
-
-    Route::get('password/reset/{code}',     'PasswordController@getReset')  ->name( 'auth.pass_reset' )->middleware('auth');
-    Route::post('password/reset',           'PasswordController@postReset') ->name( 'auth.pass_reset' )->middleware('auth');
-
-    Route::get('auth/remind-password',     'PasswordController@getRemind')  ->name( 'auth.pass_remind' )->middleware('guest');
-    Route::post('auth/remind-password',    'PasswordController@postRemind') ->name( 'auth.pass_remind' )->middleware('guest');
+        Route::post('password/email',          'PasswordController@postEmail')  ->name( 'pass_sent' )
+        Route::post('password/reset',          'PasswordController@postReset')  ->name( 'pass_reset' )
+    });
 });
+
+
 

@@ -1,6 +1,7 @@
 <?php
 
 return [
+
           'Login'         => 'Вход',
           'SignUp'        => 'Регистрация',
 

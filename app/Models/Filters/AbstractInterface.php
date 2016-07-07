@@ -2,7 +2,15 @@
 
 interface AbstractInterface
 {
-	public function Filter();
+	public function Filter($request);
+
+    // public function getCertainFilter($table,$filter,$field,$field_id);
+    // public function Search();
+    // public function SpecificSearch($table,$field,$keyword);
+    // public function SortBy();
+    // public function Sort();
+
+
 
 	public function getPrivate($type,$data);
 	public function getPopular($order);

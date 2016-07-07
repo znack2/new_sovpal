@@ -2,14 +2,6 @@
 
 trait FilterTrait
 {
-/**
- *
- *  Filter index method and Profile items/groups/rooms
- *  
- *  TODO:
- *  - implement profile filter
- *
- */
     public static function filter(Request $request)
         {
           //call __construct
@@ -20,14 +12,8 @@ trait FilterTrait
 
         //->except($user->id)  // ->appends(['search' => $search]);
         }
-/**
- *
- *  create new room
- *  
- *  TODO:
- *  - check room complete
- *
- */
+
+
     private function applyFilters()
         {
             $this->filters->each(function ($value, $name) {
@@ -35,14 +21,8 @@ trait FilterTrait
             });
             return $this;
         }
- /**
- *
- *  create new room
- *  
- *  TODO:
- *  - check room complete
- *
- */
+
+
     private function getResults(Builder $query)
         {
             $result = Cache::remember(array_keys($this->request), 10080, function(){
@@ -56,14 +36,9 @@ trait FilterTrait
            }
             return $result;
         }
- /**
- *
- *  create new room
- *  
- *  TODO:
- *  - check room complete
- *
- */
+
+
+
     private function getFilterFor($name)
         {
             return $this->filters->map(function ($value, $name) {
@@ -77,14 +52,8 @@ trait FilterTrait
 
             })->get($name, new NullFilter); 
         }
-/**
- *
- *  create new room
- *  
- *  TODO:
- *  - check room complete
- *
- */
+
+
     private function createFilterDecorator($name)
         {
             return return __NAMESPACE__ . 

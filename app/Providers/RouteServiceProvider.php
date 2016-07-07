@@ -2,20 +2,40 @@
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use App\Models\User\User;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    protected $namespace      = 'App\Http\Controllers';
-    protected $authnamespace  = 'App\Http\Controllers\Auth';
+    protected $namespace       = 'App\Http\Controllers';
+    protected $authnamespace   = 'App\Http\Controllers\Auth';
+    protected $adminnamespace  = 'App\Http\Controllers\Admin';
 
     public function boot(Router $router)
     {
-        $router->model('group',         'App\Models\Group\Group');
-        $router->model('user',          'App\Models\User\User');
-        $router->model('item',          'App\Models\Item\Item');
-        $router->model('room',          'App\Models\Room\Room');
-        $router->model('element',       'App\Models\_partials\Element');
+        $router->model('group','App\Models\Group\Group', function () {
+            throw new NotFoundHttpException;
+        });        
+        $router->model('item','App\Models\Item\Item', function () {
+            throw new NotFoundHttpException;
+        });        
+        $router->model('room','App\Models\Room\Room', function () {
+            throw new NotFoundHttpException;
+        });        
+        $router->model('element','App\Models\_partials\Element', function () {
+            throw new NotFoundHttpException;
+        });
 
+        $router->bind('user', function ($value) {
+            // filter query
+            $result = Cache::remember(array_keys($value), 1, function(){ 
+               User::with()->find($value)->where('id', auth()->id)->orWhere('private',false)->first()});
+
+            if(!$result){
+                throw new NotFoundHttpException('Private profile');
+            } else {
+               return $result; 
+            }
+        });
 
         $router->pattern('id', '[0-9]+');
         $router->pattern('tag', '[A-Za-z]+');
@@ -26,6 +46,7 @@ class RouteServiceProvider extends ServiceProvider
         $router->pattern('username', '^\b[a-z\pN\-\_\.]+\b$');
         $router->pattern('slug', '[a-z0-9-]+');
         $router->pattern('file', '(.*)');
+        $router->pattern('provider', 'facebook|ok|vkontakte');
         
        parent::boot($router);
     }
@@ -35,11 +56,14 @@ class RouteServiceProvider extends ServiceProvider
         $router->group(['namespace' => $this->namespace], function ($router) {
             require app_path('Http/Routes.php');
             require app_path('Http/CrudRoutes.php');
-            // require app_path('Http/Adminroutes.php');
         });
 
         $router->group(['namespace' => $this->authnamespace], function ($router) {
             require app_path('Http/AuthRoutes.php');
+        }); 
+
+        $router->group(['namespace' => $this->adminnamespace], function ($router) {
+            require app_path('Http/AdminRoutes.php');
         });       
     }
 }

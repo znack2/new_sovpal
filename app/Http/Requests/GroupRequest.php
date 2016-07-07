@@ -11,9 +11,6 @@ class GroupRequest extends Request
 //            return Group::where('id', $group_id)->where('user_id', Auth::id())->exists();
 
 
-
-
-
           // switch ($this->method()) {
           //     case 'PATCH' || 'PUT': 
           //         \Auth::check() && 

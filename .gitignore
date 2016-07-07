@@ -5,8 +5,8 @@ node_modules/
 app/storage/
 bootstrap/cache/
 bootstrap/compiled.php
+tests/.workflow
 
-.workflow
 .env.*.php
 .env.php
 .env

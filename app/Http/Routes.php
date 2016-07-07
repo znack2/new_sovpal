@@ -7,11 +7,10 @@ Route::when('*', 'csrf', ['post', 'put', 'patch', 'delete']);
 // ===== Language =====
 
 Route::get('lang/{locale}', function ($locale) {
-    if (in_array($locale, \Config::get('app.locales'))) {  //&& $this->validate($request, ['locale' => 'required|in:ru,en'])
+    if (in_array($locale, \Config::get('app.locales')) && $this->validate($request, ['locale' => 'required|in:ru,en'])) {  
     	\Session::put('locale', $locale);  
-    	//$request->locale        
     }
-    return redirect()->back(); // return Response::json(['success' => true], 200);                            
+    return redirect()->back();                           
 });
 
 Route::get('/', function(){	

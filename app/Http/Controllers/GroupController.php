@@ -5,136 +5,127 @@ use App\Http\Controllers\Controller;
 use App\Models\Group\GroupInterface;
 use App\Models\Group\Group;
 
-/*********************************************************************
-
-                Group --- ( Index/show - STORE - UPDATE - DELETE  ) 
-
-**********************************************************************/
+use App\Services\PurchaseService;
+use App\Exceptions\PurchaseException;
+use App\Exceptions\PolicyException;
 
 class GroupController extends Controller
 {
-	public function __construct(GroupInterface $group)
+  protected $PurchaseService;
+  
+	public function __construct(PurchaseService $purchase, GroupInterface $group)
 	    {
+          $this->purchaseService = $purchase;
 	        $this->model = $group;
 	    }
 /**
  *
- *  index group
+ *  index groups
  *
  */
-  public function index()
+  public function index(IndexRequest $request)
     {
-        logger()->info(__METHOD__);
-         try {
-            $data['items'] = $this->model->Filter();           
+        try {
+            $data['items'] = $this->model->Filter($request);
             return view('index/main',compact($data));
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        } catch (NotFoundException $e) {
+            flash('NotFound','error'); 
+            return redirect()->back();
         }
     }
 /**
  *
  *  show group
- * TODO
- * add in presenter $group->getMembers();
+ *
  */
-  public function show(Group $group)
-    {  
-        logger()->info(__METHOD__);
-         try {
-           // if(is_null($item)) {abort('404'); }
-            $data = $this->model->byId();          
-            return view('one/main',compact($data));
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
+  public function show(group $group)
+    { 
+         return view('one/main',compact(['data'=>$group]));
     } 
 /**
  *
  *  store group
- *
+ *  
  */
   public function store(GroupRequest $request)
-     {
-      logger()->info(__METHOD__);
-         try {
-            $data = $this->model->storeGroup();          
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+    {
+        try{
+            $this->authorize('store', $group);
+            $this->currentUser->storeGroup($request);            
+            return flash('Group for ' . $this->model->item->title . 'successfully has been stored','success');
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
         }
-     }
+    }
 /**
  *
  *  update group
- *
+ *  
  */
-  public function update(GroupRequest $request,Group $group)       
-    {    
-         try {
-            $data =  $this->model->storeGroup($item);          
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }  
+  public function update(GroupRequest $request,group $group)    
+  {   
+      try{
+          $this->authorize('update', $group);
+          $this->currentUser->storeGroup($request, $group);          
+          return flash('Group successfully has been updated','success');
+      }
+      catch(PolicyException $e){
+        return flash($e->getMessage(),'error');
+      }
+   }
+/**
+ *
+ *  destroy group 
+ *  
+ */
+  public function destroy(Group $group)        
+     {
+        try{
+           $this->authorize('destroy', $group);
+           $this->currentUser->deleteModel($group);         
+           return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+          return flash($e->getMessage(),'error');
+        }
+     }    
+/**
+ *
+ *  join group 
+ *  
+ */
+  public function join(Group $group)
+    {
+        try{
+          $this->authorize('join', $group);
+          if($group->checkComplete()){
+             $this->PurchaseService->purchaseGroup($group);     
+          }
+          $this->currentUser->JoinGroup($group);
+          return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+          return flash($e->getMessage(),'error');
+        }
     }
 /**
  *
- *  destroy group
- * 
- */
-  public function destroy(Group $group)      
-    {
-      logger()->info(__METHOD__);
-       try {
-            $data =  $this->model->deleteModel($group);         
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
-    }  
-/**
- *
- *  join or withdrow group
+ *  withdrow group 
  *  
  */
-  public function joinGroup(Group $group)
+  public function withdrow(Group $group)
     {
-      logger()->info(__METHOD__);   
-         try {
-            $data =  $group->JoinGroup($this->currentUser);        
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        try{
+            $this->authorize('withdrow', $group);
+            if(!$group->checkComplete()){
+               $this->currentUser->WithdrowFromGroup($group);        
+            } else {
+               return flash('Can not withrow','info'); 
+            }
+            return flash('Confirm','success');
         }
-    }
-/**
- *
- *  join or withdrow group
- *  
- */
-  public function withdrowFromGroup(Group $group)
-    {
-      logger()->info(__METHOD__);   
-       try {
-            $data =  $group->WithdrowFromGroup($this->currentUser);       
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
         }
     }
 }   

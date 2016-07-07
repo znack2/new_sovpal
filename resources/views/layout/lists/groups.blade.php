@@ -5,7 +5,7 @@
     <tr>
         <td style="padding:5px 15px 5px 20px;width:60px;">
               <div class="row text-center">
-                  @if($currentUser->id == $group->user_id && $data->type == 'shop')
+                  @if(checkCurrentUser($group->user_id)) && $data->type == 'shop')
                       @if(!$group->active)
                         @include('layout.buttons.remove_group')
                       @else
@@ -20,7 +20,7 @@
                 <br>
               </div>
               <div class="row text-center">
-                  <a class="link size12" href="{{ route('group',['group'=>$group->id]) }}">{{ trans('sovpal.Details') }}</a>
+                  {{ link(route('group',['group'=>$group->id]) ? 'asc' : 'desc']),null, 'Details')}}
               </div>
         </td>
 

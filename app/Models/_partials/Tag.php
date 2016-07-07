@@ -53,6 +53,4 @@ class Tag extends Eloquent
 	public function items(){return 		$this->morphedByMany(Item::class, 'tagged'); }
     public function rooms(){return 		$this->morphedByMany(Room::class, 'tagged'); }
     public function groups(){return 	$this->morphedByMany(Group::class, 'tagged'); }
-    
-
 }

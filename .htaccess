@@ -1,0 +1,898 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+
+
+
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+
+
+
+
+
+
+RewriteEngine on
+RewriteBase /
+
+RewriteCond %{HTTP_HOST} (.*)\.domain\.com
+RewriteRule ^$ http://www.domain.com/profile.php?u=%1 [L,QSA]
+
+RewriteRule ^photos/?$ http://www.domain.com/photos.php?u=%1
+
+RewriteRule ^photos/([^/]+)/?$ http://www.domain.com/photos.php?u=%1&a=$1
+
+RewriteRule ^photos/([^/]+)/([^/]+)/?$ http://www.domain.com/photos.php?u=%1&a=$1&p=$2
+
+RewriteRule ^settings/?$ http://www.domain.com/settings.php?u=%1
+
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+
+Options +FollowSymLinks -MultiViews
+# Turn mod_rewrite on
+RewriteEngine On
+RewriteBase /
+
+# redirects /page.php?s=services&c=city&a=name to /services/city/name/
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+page\.php\?s=([^&]+)&c=([^&]+)&a=([^&]+) [NC]
+RewriteRule ^ /%1/%2/%3? [R=301,L]
+
+# forwards /services/city/name/to /page.php?s=services&c=city&a=name
+RewriteRule ^([^/]+)/([^/]+)/([^/]+)/?$ /page.php?s=$1&c=$2&a=$3 [L,QSA]
+
+
+ RewriteEngine On
+
+ <IfModule mod_rewrite.c>
+      RewriteEngine On 
+      RewriteRule ^([^/.]+)/([^/.]+)/([^/.]*)?$ page.php?s=$1&c=$2&a=$3&%{QUERY_STRING}
+  </IfModule>
+
+
+RewriteRule    ^domain/services/city    domain/page.php?s=services&c=city    [NC,L]
+RewriteRule    ^domain/services/        domain/page.php?s=services           [NC,L]
+
+
+# - script kiddies
+
+Redirect permanent /admin.php http://localhost
+Redirect permanent /_vti_bin http://localhost
+Redirect permanent /css http://localhost
+Redirect permanent /site http://localhost
+Redirect permanent /s/ http://localhost
+Redirect permanent /v/ http://localhost
+Redirect permanent /html http://localhost
+Redirect permanent /stil http://localhost
+Redirect permanent /wp-content/cache.php http://localhost
+
+
+# - stupid robots
+
+Redirect permanent /sitemap.gz /sitemap.xml.gz
+Redirect permanent /default.htm /
+Redirect permanent /feeds/posts/default /feed/
+
+- URL truncating
+
+RedirectMatch Permanent ^/page/$ /
+# /category/ and /comments/ to a TOC
+RedirectMatch Permanent ^/(category|comments)/$ /uebersicht/
+
+# Git only! :)
+RedirectMatch Permanent \.(svn|cvs|SVN|CVS|bzr) http://localhost
+
+# Bots searching for mobile versions
+# see http://perishablepress.com/press/2010/04/26/stop-404-requests-for-mobile-versions-of-your-site/#comment-78105
+RedirectMatch gone /mobi(le)?($|/)
+RedirectMatch gone /iphone($|/)
+
+# - 410
+
+# Old feeds are dead
+Redirect gone /2008/feed/
+Redirect gone /2009/feed/
+Redirect gone /2010/feed/
+
+# stupid bots and browsers again
+
+Redirect gone /crossdomain.xml
+Redirect gone /labels.rdf
+Redirect gone /.well-known
+Redirect gone /parent-page
+RedirectMatch gone .*/config$
+
+# Pretty permalinks without mod_rewrite!
+ErrorDocument 404 /index.php
+
+
+#Jauntily show the admin’s email address in error message
+SetEnv SERVER_ADMIN info@yoursite.com
+
+#disable hotlinking of images with forbidden or custom image option
+RewriteEngine on
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?yoursite.com/.*$ [NC]
+#RewriteRule \.(gif|jpg|png)$ – [F]
+#RewriteRule \.(gif|jpg|png)$ http://www.yoursite.com/wp-content/uploads/2011/04/bracker_thou_shalt_not_steal24.jpg [R,L]
+
+#block referring domains
+#RewriteEngine on
+#RewriteCond %{HTTP_REFERER} digg\.com [NC]
+#RewriteRule .* – [F]
+
+#Remove /category/ from your WordPress url
+RewriteRule ^category/(.+)$ http://www.yourblog.com/$1 [R=301,L]
+
+#Redirect visitors to a maintenance page
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !/maintenance.html$
+RewriteCond %{REMOTE_ADDR} !^123\.123\.123\.123
+RewriteRule $ /maintenance.html [R=302,L]
+
+#auto-correct simple URL spelling mistakes
+<IfModule mod_speling.c>
+CheckSpelling On
+</IfModule>
+
+#better login
+RewriteRule ^login$ http://example.com/wp-login.php [NC,L]
+
+
+# limit indexing of directories
+Options All -Indexes
+
+# protect the htaccess file,
+# this is done by default with apache config file,
+# but you never know.
+<files .htaccess>
+order allow,deny
+deny from all
+</files>
+
+# disable the server signature
+ServerSignature Off
+
+# limit file uploads to 10mb
+LimitRequestBody 10240000
+
+# protect wpconfig.php.
+<files wp-config.php>
+order allow,deny
+deny from all
+</files>
+
+# Limit logins and admin by IP
+# this goes in the /admin folder NOT root folder .htaccess
+<Limit GET POST PUT>
+order deny,allow
+deny from all
+allow from xx.xx.xx.xx  //( your static IP)
+</Limit>    
+
+# block bad query strings (hackers/bots), please be aware this might break some plugins
+# QUERY STRING EXPLOITS
+<IfModule mod_rewrite.c>
+ RewriteCond %{QUERY_STRING} \.\.\/    [NC,OR]
+ RewriteCond %{QUERY_STRING} boot\.ini [NC,OR]
+ RewriteCond %{QUERY_STRING} tag\=     [NC,OR]
+ RewriteCond %{QUERY_STRING} ftp\:     [NC,OR]
+ RewriteCond %{QUERY_STRING} http\:    [NC,OR]
+ RewriteCond %{QUERY_STRING} https\:   [NC,OR]
+ RewriteCond %{QUERY_STRING} mosConfig [NC,OR]
+ RewriteCond %{QUERY_STRING} ^.*(\[|\]|\(|\)|<|>|'|"|;|\?|\*).* [NC,OR]
+ RewriteCond %{QUERY_STRING} ^.*(%22|%27|%3C|%3E|%5C|%7B|%7C).* [NC,OR]
+ RewriteCond %{QUERY_STRING} ^.*(%0|%A|%B|%C|%D|%E|%F|127\.0).* [NC,OR]
+ RewriteCond %{QUERY_STRING} ^.*(globals|encode|config|localhost|loopback).* [NC,OR]
+ RewriteCond %{QUERY_STRING} ^.*(request|select|insert|union|declare|drop).* [NC]
+ RewriteRule ^(.*)$ - [F,L]
+</IfModule>
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------
+# Better website experience for IE users
+
+# Force the latest IE version, in various cases when it may fall back to IE7 mode
+# Use ChromeFrame if it's installed for a better experience for the poor IE folk
+# ----------------------------------------------------------------------
+
+
+<IfModule mod_headers.c>
+  Header set X-UA-Compatible "IE=Edge,chrome=1"
+  # mod_headers can't match by content-type, but we don't want to send this header on *everything*...
+  <FilesMatch "\.(appcache|crx|css|eot|gif|htc|ico|jpe?g|js|m4a|m4v|manifest|mp4|oex|oga|ogg|ogv|otf|pdf|png|safariextz|svg|svgz|ttf|vcf|webm|webp|woff|xml|xpi)$">
+    Header unset X-UA-Compatible
+  </FilesMatch>
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Gzip compression
+# Force deflate for mangled headers developer.yahoo.com/blogs/ydn/posts/2010/12/pushing-beyond-
+ # Compress all output labeled with one of the following MIME-types
+  # (for Apache versions below 2.3.7, you don't need to enable `mod_filter`
+  # and can remove the `<IfModule mod_filter.c>` and `</IfModule>` lines as
+  # `AddOutputFilterByType` is still in the core directives)
+# ----------------------------------------------------------------------
+
+<IfModule mod_deflate.c>
+  gzipping/
+  <IfModule mod_setenvif.c>
+    <IfModule mod_headers.c>
+      SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+      RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+    </IfModule>
+  </IfModule>
+ 
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE application/atom+xml \
+                                  application/javascript \
+                                  application/json \
+                                  application/rss+xml \
+                                  application/vnd.ms-fontobject \
+                                  application/x-font-ttf \
+                                  application/xhtml+xml \
+                                  application/xml \
+                                  font/opentype \
+                                  image/svg+xml \
+                                  image/x-icon \
+                                  text/css \
+                                  text/html \
+                                  text/plain \
+                                  text/x-component \
+                                  text/xml
+  </IfModule>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Expires headers (for better cache control)
+# ----------------------------------------------------------------------
+# These are pretty far-future expires headers.
+# They assume you control versioning with filename-based cache busting
+# Additionally, consider that outdated proxies may miscache
+#   www.stevesouders.com/blog/2008/08/23/revving-filenames-dont-use-querystring/
+# If you don't use filenames to version, lower the CSS and JS to something like
+# "access plus 1 week".
+
+# ----------------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive on
+# Perhaps better to whitelist expires rules? Perhaps.
+  ExpiresDefault                          "access plus 1 month"
+# cache.appcache needs re-requests in FF 3.6 (thanks Remy ~Introducing HTML5)
+  ExpiresByType text/cache-manifest       "access plus 0 seconds"
+# Your document html
+  ExpiresByType text/html                 "access plus 0 seconds"
+# Data
+  ExpiresByType application/json          "access plus 0 seconds"
+  ExpiresByType application/xml           "access plus 0 seconds"
+  ExpiresByType text/xml                  "access plus 0 seconds"
+# Feed
+  ExpiresByType application/atom+xml      "access plus 1 hour"
+  ExpiresByType application/rss+xml       "access plus 1 hour"
+# Favicon (cannot be renamed)
+  ExpiresByType image/x-icon              "access plus 1 week"
+# Media: images, video, audio
+  ExpiresByType audio/ogg                 "access plus 1 month"
+  ExpiresByType image/gif                 "access plus 1 month"
+  ExpiresByType image/jpeg                "access plus 1 month"
+  ExpiresByType image/png                 "access plus 1 month"
+  ExpiresByType video/mp4                 "access plus 1 month"
+  ExpiresByType video/ogg                 "access plus 1 month"
+  ExpiresByType video/webm                "access plus 1 month"
+# HTC files  (css3pie)
+  ExpiresByType text/x-component          "access plus 1 month"
+# Webfonts
+  ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
+  ExpiresByType application/x-font-ttf    "access plus 1 month"
+  ExpiresByType application/x-font-woff   "access plus 1 month"
+  ExpiresByType font/opentype             "access plus 1 month"
+  ExpiresByType image/svg+xml             "access plus 1 month"
+# CSS and JavaScript
+  ExpiresByType application/javascript    "access plus 1 year"
+  ExpiresByType text/css                  "access plus 1 year"
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Prevent mobile network providers from modifying your site
+# ----------------------------------------------------------------------
+# The following header prevents modification of your code over 3G on some
+# European providers.
+# This is the official 'bypass' suggested by O2 in the UK.
+# <IfModule mod_headers.c>
+# Header set Cache-Control "no-transform"
+# </IfModule>
+# ----------------------------------------------------------------------
+# ETag removal
+# ----------------------------------------------------------------------
+# FileETag None is not enough for every server.
+
+
+
+<IfModule mod_headers.c>
+  Header unset ETag
+</IfModule>
+
+
+# Since we're sending far-future expires, we don't need ETags for
+# static content.
+#   developer.yahoo.com/performance/rules.html#etags
+FileETag None
+# ----------------------------------------------------------------------
+# Suppress or force the "www." at the beginning of URLs
+# ----------------------------------------------------------------------
+# The same content should never be available under two different URLs -
+# especially not with and without "www." at the beginning, since this can cause
+# SEO problems (duplicate content). That's why you should choose one of the
+# alternatives and redirect the other one.
+# By default option 1 (no "www.") is activated.
+# no-www.org/faq.php?q=class_b
+# If you'd prefer to use option 2, just comment out all option 1 lines
+# and uncomment option 2.
+# IMPORTANT: NEVER USE BOTH RULES AT THE SAME TIME!
+# ----------------------------------------------------------------------
+# Option 1:
+# Rewrite "www.example.com -> example.com".
+
+
+
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+
+# ----------------------------------------------------------------------
+# Option 2:
+# Rewrite "example.com -> www.example.com".
+# Be aware that the following rule might not be a good idea if you use "real"
+# subdomains for certain parts of your website.
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTPS} !=on
+#   RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
+#   RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+
+
+
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+# BEGIN Wordpress Browser Cache
+
+
+<IfModule mod_mime.c>
+    AddType text/css .css
+    AddType application/x-javascript .js
+    AddType text/x-component .htc
+    AddType text/html .html .htm
+    AddType text/richtext .rtf .rtx
+    AddType image/svg+xml .svg .svgz
+    AddType text/plain .txt
+    AddType text/xsd .xsd
+    AddType text/xsl .xsl
+    AddType text/xml .xml
+    AddType video/asf .asf .asx .wax .wmv .wmx
+    AddType video/avi .avi
+    AddType image/bmp .bmp
+    AddType application/java .class
+    AddType video/divx .divx
+    AddType application/msword .doc .docx
+    AddType application/vnd.ms-fontobject .eot
+    AddType application/x-msdownload .exe
+    AddType image/gif .gif
+    AddType application/x-gzip .gz .gzip
+    AddType image/x-icon .ico
+    AddType image/jpeg .jpg .jpeg .jpe
+    AddType application/vnd.ms-access .mdb
+    AddType audio/midi .mid .midi
+    AddType video/quicktime .mov .qt
+    AddType audio/mpeg .mp3 .m4a
+    AddType video/mp4 .mp4 .m4v
+    AddType video/mpeg .mpeg .mpg .mpe
+    AddType application/vnd.ms-project .mpp
+    AddType application/x-font-otf .otf
+    AddType application/vnd.oasis.opendocument.database .odb
+    AddType application/vnd.oasis.opendocument.chart .odc
+    AddType application/vnd.oasis.opendocument.formula .odf
+    AddType application/vnd.oasis.opendocument.graphics .odg
+    AddType application/vnd.oasis.opendocument.presentation .odp
+    AddType application/vnd.oasis.opendocument.spreadsheet .ods
+    AddType application/vnd.oasis.opendocument.text .odt
+    AddType audio/ogg .ogg
+    AddType application/pdf .pdf
+    AddType image/png .png
+    AddType application/vnd.ms-powerpoint .pot .pps .ppt .pptx
+    AddType audio/x-realaudio .ra .ram
+    AddType application/x-shockwave-flash .swf
+    AddType application/x-tar .tar
+    AddType image/tiff .tif .tiff
+    AddType application/x-font-ttf .ttf .ttc
+    AddType audio/wav .wav
+    AddType audio/wma .wma
+    AddType application/vnd.ms-write .wri
+    AddType application/vnd.ms-excel .xla .xls .xlsx .xlt .xlw
+    AddType application/zip .zip
+</IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css A31536000
+    ExpiresByType application/x-javascript A31536000
+    ExpiresByType text/x-component A31536000
+    ExpiresByType text/html A3600
+    ExpiresByType text/richtext A3600
+    ExpiresByType image/svg+xml A3600
+    ExpiresByType text/plain A3600
+    ExpiresByType text/xsd A3600
+    ExpiresByType text/xsl A3600
+    ExpiresByType text/xml A3600
+    ExpiresByType video/asf A31536000
+    ExpiresByType video/avi A31536000
+    ExpiresByType image/bmp A31536000
+    ExpiresByType application/java A31536000
+    ExpiresByType video/divx A31536000
+    ExpiresByType application/msword A31536000
+    ExpiresByType application/vnd.ms-fontobject A31536000
+    ExpiresByType application/x-msdownload A31536000
+    ExpiresByType image/gif A31536000
+    ExpiresByType application/x-gzip A31536000
+    ExpiresByType image/x-icon A31536000
+    ExpiresByType image/jpeg A31536000
+    ExpiresByType application/vnd.ms-access A31536000
+    ExpiresByType audio/midi A31536000
+    ExpiresByType video/quicktime A31536000
+    ExpiresByType audio/mpeg A31536000
+    ExpiresByType video/mp4 A31536000
+    ExpiresByType video/mpeg A31536000
+    ExpiresByType application/vnd.ms-project A31536000
+    ExpiresByType application/x-font-otf A31536000
+    ExpiresByType application/vnd.oasis.opendocument.database A31536000
+    ExpiresByType application/vnd.oasis.opendocument.chart A31536000
+    ExpiresByType application/vnd.oasis.opendocument.formula A31536000
+    ExpiresByType application/vnd.oasis.opendocument.graphics A31536000
+    ExpiresByType application/vnd.oasis.opendocument.presentation A31536000
+    ExpiresByType application/vnd.oasis.opendocument.spreadsheet A31536000
+    ExpiresByType application/vnd.oasis.opendocument.text A31536000
+    ExpiresByType audio/ogg A31536000
+    ExpiresByType application/pdf A31536000
+    ExpiresByType image/png A31536000
+    ExpiresByType application/vnd.ms-powerpoint A31536000
+    ExpiresByType audio/x-realaudio A31536000
+    ExpiresByType image/svg+xml A31536000
+    ExpiresByType application/x-shockwave-flash A31536000
+    ExpiresByType application/x-tar A31536000
+    ExpiresByType image/tiff A31536000
+    ExpiresByType application/x-font-ttf A31536000
+    ExpiresByType audio/wav A31536000
+    ExpiresByType audio/wma A31536000
+    ExpiresByType application/vnd.ms-write A31536000
+    ExpiresByType application/vnd.ms-excel A31536000
+    ExpiresByType application/zip A31536000
+</IfModule>
+<IfModule mod_deflate.c>
+    <IfModule mod_setenvif.c>
+        BrowserMatch ^Mozilla/4 gzip-only-text/html
+        BrowserMatch ^Mozilla/4\.0[678] no-gzip
+        BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+        BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
+    </IfModule>
+    <IfModule mod_headers.c>
+        Header append Vary User-Agent env=!dont-vary
+    </IfModule>
+    <IfModule mod_filter.c>
+        AddOutputFilterByType DEFLATE text/css application/x-javascript text/x-component text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/x-icon
+    </IfModule>
+</IfModule>
+<FilesMatch "\.(css|js|htc|CSS|JS|HTC)$">
+    <IfModule mod_headers.c>
+        Header set Pragma "public"
+        Header append Cache-Control "public, must-revalidate, proxy-revalidate"
+    </IfModule>
+    FileETag MTime Size
+    <IfModule mod_headers.c>
+         Header set X-Powered-By "W3 Total Cache/0.9.2.4"
+    </IfModule>
+</FilesMatch>
+<FilesMatch "\.(html|htm|rtf|rtx|svg|svgz|txt|xsd|xsl|xml|HTML|HTM|RTF|RTX|SVG|SVGZ|TXT|XSD|XSL|XML)$">
+    <IfModule mod_headers.c>
+        Header set Pragma "public"
+        Header append Cache-Control "public, must-revalidate, proxy-revalidate"
+    </IfModule>
+    FileETag MTime Size
+    <IfModule mod_headers.c>
+         Header set X-Powered-By "W3 Total Cache/0.9.2.4"
+    </IfModule>
+</FilesMatch>
+<FilesMatch "\.(asf|asx|wax|wmv|wmx|avi|bmp|class|divx|doc|docx|eot|exe|gif|gz|gzip|ico|jpg|jpeg|jpe|mdb|mid|midi|mov|qt|mp3|m4a|mp4|m4v|mpeg|mpg|mpe|mpp|otf|odb|odc|odf|odg|odp|ods|odt|ogg|pdf|png|pot|pps|ppt|pptx|ra|ram|svg|svgz|swf|tar|tif|tiff|ttf|ttc|wav|wma|wri|xla|xls|xlsx|xlt|xlw|zip|ASF|ASX|WAX|WMV|WMX|AVI|BMP|CLASS|DIVX|DOC|DOCX|EOT|EXE|GIF|GZ|GZIP|ICO|JPG|JPEG|JPE|MDB|MID|MIDI|MOV|QT|MP3|M4A|MP4|M4V|MPEG|MPG|MPE|MPP|OTF|ODB|ODC|ODF|ODG|ODP|ODS|ODT|OGG|PDF|PNG|POT|PPS|PPT|PPTX|RA|RAM|SVG|SVGZ|SWF|TAR|TIF|TIFF|TTF|TTC|WAV|WMA|WRI|XLA|XLS|XLSX|XLT|XLW|ZIP)$">
+    <IfModule mod_headers.c>
+        Header set Pragma "public"
+        Header append Cache-Control "public, must-revalidate, proxy-revalidate"
+    </IfModule>
+    FileETag MTime Size
+    <IfModule mod_headers.c>
+         Header set X-Powered-By "W3 Total Cache/0.9.2.4"
+    </IfModule>
+</FilesMatch>
+# END Wordpress Browser Cache
+# BEGIN Wordpress Page Cache core
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^(.*\/)?Wordpress_rewrite_test$ $1?Wordpress_rewrite_test=1 [L]
+    RewriteCond %{HTTP:Accept-Encoding} gzip
+    RewriteRule .* - [E=Wordpress_ENC:_gzip]
+    RewriteCond %{REQUEST_METHOD} !=POST
+    RewriteCond %{QUERY_STRING} =""
+    RewriteCond %{HTTP_HOST} =hubtank.com
+    RewriteCond %{REQUEST_URI} !(\/wp-admin\/|\/xmlrpc.php|\/wp-(app|cron|login|register|mail)\.php|\/feed\/|wp-.*\.php|index\.php) [NC,OR]
+    RewriteCond %{REQUEST_URI} (wp-comments-popup\.php|wp-links-opml\.php|wp-locations\.php) [NC]
+    RewriteCond %{HTTP_COOKIE} !(comment_author|wp-postpass|wordpress_\[a-f0-9\]\+|wordpress_logged_in) [NC]
+    RewriteCond %{HTTP_USER_AGENT} !(W3\ Total\ Cache/0\.9\.2\.4) [NC]
+    RewriteCond "%{DOCUMENT_ROOT}/wp-content/Wordpress/pgcache/%{REQUEST_URI}/_index%{ENV:Wordpress_UA}%{ENV:Wordpress_REF}%{ENV:Wordpress_SSL}.html%{ENV:Wordpress_ENC}" -f
+    RewriteRule .* "/wp-content/Wordpress/pgcache/%{REQUEST_URI}/_index%{ENV:Wordpress_UA}%{ENV:Wordpress_REF}%{ENV:Wordpress_SSL}.html%{ENV:Wordpress_ENC}" [L]
+</IfModule>
+
+
+# END Wordpress Page Cache core
+# BEGIN WordPress
+
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css  application/x-javascript
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
+
+
+
+
+
+Disable Etags:
+
+Header unset ETag
+FileETag None
+Add expire headers:
+
+<FilesMatch "\.(ico|jpg|jpeg|png|gif|js|css|swf)$">
+Header set Expires "Tue, 16 Jun 2020 20:00:00 GMT"
+</FilesMatch>
+Or
+
+ExpiresActive On
+ExpiresByType text/html "access plus 1 day"
+ExpiresByType image/gif "access plus 10 years"
+ExpiresByType image/jpeg "access plus 10 years"
+ExpiresByType image/png "access plus 10 years"
+ExpiresByType text/css "access plus 10 years"
+ExpiresByType text/javascript "access plus 10 years"
+ExpiresByType application/x-javascript "access plus 10 years"
+Compress plain text file:
+
+<FilesMatch "\.(js|css|html|htm|php|xml)$">
+SetOutputFilter DEFLATE
+</FilesMatch>
+Read more about them here.
+
+Updated:
+
+Redirect requests to www domain
+
+RewriteCond %{HTTP_HOST} !^www\.domain\.tld [NC]
+RewriteRule ^(.*)$ http://www.domain.tld/$1 [R=301,L]
+Block request to xmlrpc.php
+
+Use this only when you don't use remote publishing as it can prevent your blog from hacks.
+
+RewriteRule ^(.*)xmlrpc\.php$ http://www.domain.tld [R=301,L]
+Redirect all feeds to feedburner
+
+RewriteCond %{HTTP_USER_AGENT} !^.*(FeedBurner|FeedValidator) [NC]
+RewriteRule ^feed/?.*$ http://feeds.feedburner.com/feed_uri [R=301,NC,L]
+
+
+This is a very common function for redirecting your site at the top level. Sometimes a site can be accessed at http://yourwebsiteurl123.com/ and http://www.yourwebsiteurl123.com/ which can cause duplication and site management issues.
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^www\.
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+Clean up URLs to remove file extensions
+If you wanted to make your URLs look a little nicer by removing the file extension from the end of it you can use the function below. in order for this to work internally to the site you should also ensure that all the linking within the site has the extension manually removed.
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html
+Restrict access
+To add an element of security to the .htaccess file you should add the following function. It will deny access to anyone attempting to get to the file externally to view or change it. For example, if you were to add this to your file and then attempt to access it at http://www.yourwebsiteurl123.com/.htaccess you will be presented with a 403 forbidden error. This means its working!
+<Files .htaccess>
+order allow,deny
+deny from all
+</Files>
+Password protect directories or pages
+To do this you need to create a .htpasswd file to store the secure details of the access passwords for each user. Once this is created you would place the .htpasswd file in the appropriate location and add the function below to the .htaccess file (placed in the directory you wanted to secure) to set the security to the protected directory.
+AuthType Basic
+AuthName “My Protected Area”
+AuthUserFile /path/to/.htpasswd
+Require valid-user
+To configure the .htpasswd file I recommend using a password generator to create a secure version of the password. In the example below you will see my test username ‘test’ followed by a colon and then the secure version of the password ‘testpassword’ this is how each username and password should be stored with one on each line;
+test:$apr1$OnwiBYky$7BKeCkFf6fFE/HStx5D3P/
+301 redirects
+To redirect an old page to a new page on your (or an external) site you can use the following function. This will set the redirect up showing a 301 server status code and will ensure the appropriate page authority is passed from the old page to the new page.
+Redirect 301 /oldpage.html http://www.yourwebsiteurl123.com/newpage.html
+Alternatively you can write these as:
+RewriteRule ^/oldpage.html$ http://www.yourwebsiteurl123.com/newpage.html [R=301,L]
+URL Error handling
+Sometimes people type the wrong URL in or there is an error on the site that couldn’t be resolved at the time of the server request. It is important that the generic error page is not provided to the user as sometimes these can look poor and will probably end in the user leaving the site. If possible you should create an error page or pages to handle each error. Once these are created you can add the code below into your .htaccess file substituting the location in the example for the actual location of the pages. (As a rule you should also disallow these pages in your robots.txt file.)
+ErrorDocument 400 /errors/badrequest.html
+ErrorDocument 401 /errors/authreqd.html
+ErrorDocument 403 /errors/forbid.html
+ErrorDocument 404 /errors/notfound.html
+ErrorDocument 500 /errors/serverr.html
+
+
+
+
+
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+FORCE TRAILING SLASH
+Many clients of mine asked me for always having a trailing slash at the end of their urls. Looks like it’s great for SEO. The following snippet will alwyas add a trailing slash to your site urls.
+
+<IfModule mod_rewrite.c>
+ RewriteCond %{REQUEST_URI} /+[^\.]+$
+ RewriteRule ^(.+[^/])$ %{REQUEST_URI}/ [R=301,L]
+</IfModule>
+Source: http://perishablepress.com/code-snippets/
+
+PREVENT HOTLINKING
+Hotlinking (the act of using images from another site than yours) is unfortunely a common practice which can waste lots of your precious bandwidth. This useful snippets will redirect all hotlinked images to a specific image, defined on line 6.
+
+RewriteEngine On
+#Replace ?mysite\.com/ with your blog url
+RewriteCond %{HTTP_REFERER} !^http://(.+\.)?mysite\.com/ [NC]
+RewriteCond %{HTTP_REFERER} !^$
+#Replace /images/nohotlink.jpg with your "don't hotlink" image url
+RewriteRule .*\.(jpe?g|gif|bmp|png)$ /images/nohotlink.jpg [L]
+Source: http://www.wprecipes.com/how-to-protect-your…
+
+REDIRECT MOBILE DEVICES
+If your site is not using responsive web design yet, it could be very useful to be able to redirect mobile device to a mobile-specific version of your website.
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/m/.*$
+RewriteCond %{HTTP_ACCEPT} "text/vnd.wap.wml|application/vnd.wap.xhtml+xml" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "acs|alav|alca|amoi|audi|aste|avan|benq|bird|blac|blaz|brew|cell|cldc|cmd-" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "dang|doco|eric|hipt|inno|ipaq|java|jigs|kddi|keji|leno|lg-c|lg-d|lg-g|lge-" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT}  "maui|maxo|midp|mits|mmef|mobi|mot-|moto|mwbp|nec-|newt|noki|opwv" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "palm|pana|pant|pdxg|phil|play|pluc|port|prox|qtek|qwap|sage|sams|sany" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "sch-|sec-|send|seri|sgh-|shar|sie-|siem|smal|smar|sony|sph-|symb|t-mo" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "teli|tim-|tosh|tsm-|upg1|upsi|vk-v|voda|w3cs|wap-|wapa|wapi" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "wapp|wapr|webc|winw|winw|xda|xda-" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "up.browser|up.link|windowssce|iemobile|mini|mmp" [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} "symbian|midp|wap|phone|pocket|mobile|pda|psp" [NC]
+#------------- The line below excludes the iPad
+RewriteCond %{HTTP_USER_AGENT} !^.*iPad.*$ 
+#-------------
+RewriteCond %{HTTP_USER_AGENT} !macintosh [NC] #*SEE NOTE BELOW
+RewriteRule ^(.*)$ /m/ [L,R=302]
+Source: http://snipplr.com/view.php?codeview&id=55114
+
+FORCE DOWNLOAD OF A SPECIFIC FILETYPE
+For some reasons you may need to force download of specific files, such as MP3s or XLS. This code snippets will prevent your visitor’s browser to read the file and force downloading instead.
+
+<Files *.xls>
+  ForceType application/octet-stream
+  Header set Content-Disposition attachment
+</Files>
+<Files *.eps>
+  ForceType application/octet-stream
+  Header set Content-Disposition attachment
+</Files>
+Source: http://snipplr.com/view.php?codeview&id=54752
+
+CROSS DOMAIN FONT EMBEDDING FOR FIREFOX
+When embedding a font, Firefox do not allow you to embed from an external website. Using the .htaccess snippet below, you can bypass this limitation.
+
+<FilesMatch "\.(ttf|otf|eot|woff)$">
+<IfModule mod_headers.c>    
+    Header set Access-Control-Allow-Origin "http://yourdomain.com"
+</IfModule>
+</FilesMatch>
+Source: http://snipplr.com/view/53703
+
+SPEED UP YOUR SITE WITH .HTACCESS CACHING
+This is probably the most useful snippet of this whole list. By using some simple .htaccess file cahing, you can dramatically increase your website speed. A snippet you should always have on your toolbox!
+
+# 1 YEAR
+<FilesMatch "\.(ico|pdf|flv)$">
+Header set Cache-Control "max-age=29030400, public"
+</FilesMatch>
+# 1 WEEK
+<FilesMatch "\.(jpg|jpeg|png|gif|swf)$">
+Header set Cache-Control "max-age=604800, public"
+</FilesMatch>
+# 2 DAYS
+<FilesMatch "\.(xml|txt|css|js)$">
+Header set Cache-Control "max-age=172800, proxy-revalidate"
+</FilesMatch>
+# 1 MIN
+<FilesMatch "\.(html|htm|php)$">
+Header set Cache-Control "max-age=60, private, proxy-revalidate"
+</FilesMatch>
+Source: http://www.askapache.com/htaccess/speed-up-sites-with-htaccess-caching.html
+
+STOP SPAM ON YOUR WORDPRESS BLOG
+Sick of spammers on your WordPress blog? Of course, Akismet helps a lot, but your .htaccess file can also help: Today’s recipe is a snippet that prevent spam bots to directly access your wp-comments-post.php file, which is used to post comments on your blog.
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} POST
+RewriteCond %{REQUEST_URI} .wp-comments-post\.php*
+RewriteCond %{HTTP_REFERER} !.*yourdomainname.* [OR]
+RewriteCond %{HTTP_USER_AGENT} ^$
+RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L]
+</IfModule>
+Source: http://www.wprecipes.com/reduce-spam-on-your-wordpress-blog-by-using-htaccess
+
+REDIRECT DIFFERENT FEEDS TO A SINGLE FORMAT
+Years ago, differents feed formats, such as RSS, Atom or Rdf were used. Nowadays, it seems that RSS is definitely the most used. This snippets allows you to redirect all feeds formats to a single feed. This snippet can be used “as it” on WordPress blogs.
+
+<IfModule mod_alias.c>
+ RedirectMatch 301 /feed/(atom|rdf|rss|rss2)/?$ http://example.com/feed/
+ RedirectMatch 301 /comments/feed/(atom|rdf|rss|rss2)/?$ http://example.com/comments/feed/
+</IfModule>
+Source: http://www.wprecipes.com/redirect-feeds-to-a-single-format
+
+CONFIGURE YOUR WEBSITE FOR HTML5 VIDEOS
+HTML5 is bringing lots of new exiting options in the world of web development. Among other cool features, being able to play videos without using Flash is really cool. Though, you have to configure your server properly to work with the latest HTML5 video standards. This snippet will definitely help.
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !=/favicon.ico
+AddType video/ogg .ogv
+AddType video/ogg .ogg
+AddType video/mp4 .mp4
+AddType video/webm .webm
+AddType application/x-shockwave-flash swf
+Source: http://snipplr.com/view.php?codeview&id=53437
+
+LOG PHP ERRORS
+Instead of displaying PHP errors to your site (and to possible hackers…) this code snippet will log it into a .log file while hiding errors to visitors.
+
+# display no errs to user
+php_flag display_startup_errors off
+php_flag display_errors off
+php_flag html_errors off
+# log to file
+php_flag log_errors on
+php_value error_log /location/to/php_error.log
+Source: http://css-tricks.com/snippets/htaccess/php-error-logging/
+
+RUN PHP INSIDE JAVASCRIPT FILES
+When coding in JavaScript, it can very useful to be able to use PHP inside the .js files, for example for retrieving data from your database. Here is a snippet to allow the use of PHP inside .js files.
+
+AddType application/x-httpd-php .js
+AddHandler x-httpd-php5 .js
+
+<FilesMatch "\.(js|php)$">
+SetHandler application/x-httpd-php
+</FilesMatch>

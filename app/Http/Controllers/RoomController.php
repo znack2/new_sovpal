@@ -11,12 +11,8 @@ use App\Models\Room\Room;
 use App\Models\User\User;
 use App\Models\_partials\Element;
 
-/*********************************************************************
-
-                room --- ( Index - STORE - UPDATE - DELETE  ) 
-
-**********************************************************************/
-
+use Exception;
+use Exceptions\PolicyException;
 
 class RoomController extends Controller
 {
@@ -24,125 +20,108 @@ class RoomController extends Controller
 	    {
 	        $this->model = $room;
 	    }
-      
 /**
  *
- * index rooms
+ *  index rooms
  *
  */
-  public function index()
+  public function index(IndexRequest $request)
     {
-      logger()->info(__METHOD__);
-       try {
-            $data['items'] = $this->model->Filter();           
+        try {
+            $data['items'] = $this->model->Filter($request);
             return view('index/main',compact($data));
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        } catch (NotFoundException $e) {
+            flash('NotFound','error'); 
+            return redirect()->back();
         }
     }
 /**
  *
- *  store Room
- *  ? inject Room $room ?
+ *  show room
  *
+ */
+  public function show(Room $room)
+    { 
+         return view('one/main',compact(['data'=>$room]));
+    } 
+/**
+ *
+ *  store room
+ *  
  */
   public function store(RoomRequest $request)
     {
-        logger()->info(__METHOD__);
-         try {
-            $data = $this->model->storeRoom();          
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        try{
+            $this->authorize('store', $room);
+            $this->currentUser->storeRoom($request);            
+            return flash('Room' . $room->title . 'successfully has been stored','success');
+        }
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
         }
     }
 /**
  *
  *  update room
  *  
- *  TODO:
- *  - remove User $user ?
- *
  */
-	public function update(RoomRequest $request,User $user,Room $room)       
-	   {   
-        logger()->info(__METHOD__);
-         try {
-            $data = $this->model->storeRoom($room);          
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        } 
-	   }
+  public function update(RoomRequest $request,Room $room)    
+  {   
+      try{
+          $this->authorize('update', $room);
+          $this->currentUser->storeRoom($request, $room);          
+          return flash('room successfully has been updated','success');
+      }
+      catch(PolicyException $e){
+        return flash($e->getMessage(),'error');
+      }
+   }
 /**
  *
- *  remove Room
+ *  destroy room 
  *  
- *  TODO:
- *  - remove User $user ?
- *
  */
-  public function destroy(User $user,Room $room)         
-    {
-        logger()->info(__METHOD__);
-         try {
-            $data =  $this->model->deleteModel($room);         
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
-    } 
-/**
- *
- *  add element into room
- *  section = profile menu (settings/items/groups/rooms)
- *  
- *  TODO:
- *  - remove User $user ?
- *  - in view add room_id to form url
- *  - in view add element_id to form url
- * 
- *
- */
-  public function AddElement(User $user,Room $room,Element $element)        
-      {
-         logger()->info(__METHOD__);
-          try {
-            $data =  $this->model->addModel($room,'elements',$element);
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
-      }  
-/**
- *
- *  remove ELement
- *  
- *  TODO:
- *  - remove User $user ?
- *
- */
-  public function RemoveElement(User $user,Room $room,Element $element)      
+  public function destroy(room $room)        
      {
-        logger()->info(__METHOD__);
-        try {
-            $data =  $this->model->removeModel($room,'elements',$element);
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        try{
+           $this->authorize('destroy', $room);
+           $this->currentUser->deleteModel($room);         
+           return flash('Confirm','success');
         }
-     }  
-}   
-
+        catch(PolicyException $e){
+          return flash($e->getMessage(),'error');
+        }
+     }    
+/**
+ *
+ *  add element 
+ *  
+ */
+  public function AddElement(Room $room,Element $element)
+    {
+        try{
+          $this->authorize('join', $room);
+          $this->model->addModel($room,'elements',$element);   
+          return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+          return flash($e->getMessage(),'error');
+        }
+    }
+/**
+ *
+ *  remove element 
+ *  
+ */
+  public function RemoveElement(Room $room,Element $element)
+    {
+        try{
+            $this->authorize('withdrow', $room);
+            $this->model->removeModel($room,'elements',$element);    
+            return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
+        }
+    }
+}

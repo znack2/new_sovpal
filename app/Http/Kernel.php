@@ -14,9 +14,9 @@ class Kernel extends HttpKernel
         // TODO: re-enable this for production
         // \App\Http\Middleware\VerifyCsrfToken::class,
         // \Krucas\Notification\Middleware\NotificationMiddleware::class,
+        // \Clockwork\Support\Laravel\ClockworkMiddleware::class,
         \App\Http\Middleware\Locale::class,
         \App\Http\Middleware\SessionTimeout::class,
-        // \Clockwork\Support\Laravel\ClockworkMiddleware::class,
     ];
 
 // works only when you assign route
@@ -27,14 +27,5 @@ class Kernel extends HttpKernel
         'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
     //pages for guest(other redirect home)
         'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
-    //only for specific user_id
-        'private'         => \App\Http\Middleware\PrivateLink::class,
-    //delete only admin
-        // 'canDelete'     => \App\Http\Middleware\DeleteIfAdmin::class,
-    //see only role = 
-        // 'role'          => \App\Http\Middleware\Role::class,
-        // 'type'          => \App\Http\Middleware\Type::class,
-    //see only admin
-        // 'admin'         => \App\Http\Middleware\Admin::class,
     ];
 }

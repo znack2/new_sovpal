@@ -27,11 +27,10 @@ class UserRepo  extends AbstractRepo implements UserInterface
  *  - check return $user to registration? 
  *
  */
-    public function storeUser($user = null)
+    public function storeUser($data, $user = null)
         {
-          $data = $this->filters;
-
           DB::beginTransaction();
+          
           $user = User::where('id', $id)->update(['name', $request->name]);
 
           try {
@@ -41,14 +40,7 @@ class UserRepo  extends AbstractRepo implements UserInterface
               // $this->set_Plan($user,$data);
               $user->assing_Address($data);
               $user->push();
-              return 'Your profile information successfully has been'. isset($user) ? 'updated' : 'stored';
-          } catch(ValidationException $e)
-          {
-              DB::rollback();
-              return redirect()
-                    ->back()
-                    ->withErrors( $e->getErrors() )//'error' => $e->getMessage()
-                    ->withInput();
+              return true;
           } catch(\Exception $e)
           {
               DB::rollback();
@@ -124,5 +116,4 @@ class UserRepo  extends AbstractRepo implements UserInterface
     }
 }
 
-
-
+               

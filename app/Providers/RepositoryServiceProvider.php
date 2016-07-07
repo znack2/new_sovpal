@@ -15,11 +15,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $app->bind('App\Models\Group\GroupInterface',                   'App\Models\Group\GroupRepo');
         $app->bind('App\Models\Room\RoomInterface',                     'App\Models\Room\RoomRepo');
 
-        // $app->bind("App\Models\ItemInterface",function(){
+        // $app->bind("App\Models\Item\ItemInterface",function(){
         //     if(Auth::user()){
-        //         return new ItemRepository(Auth::user()->item);
+        //         return new App\Models\Item\ItemRepo(Auth::user()->item);
         //     }else{
-        //         return new ItemRepository(new Item());
+        //         return new App\Models\Item\ItemRepo(new Item());
         //     }
         // });
     }

@@ -1,18 +1,12 @@
 
 @foreach($data['items'] as $user)
-     <tr class="{{ $currentUser->id == $user->id ? 'my_group' : '' }}">
+     <tr class="{{ checkCurrentUser($user->id,'my_group')}}">
          <td class="col-sm-2">
-             <a class="link" href="{{ route('profile',['user'=>$data->id]) }}">
-                 <div class="profile_button">
-                   <img src="{{ asset('assets/images/users/'.$user->getImage('avatar')) }}" 
-                   class="button_image img-responsive" width="50px";height:50px;>
-                 </div>
-             </a>
+         <div class="profile_button">{{ link(route('profile',['user'=>$data->id]),image($user), 'Details')}} </div>
          </td>
          <td style="line-height: 55px">
              <span class="size16" >
-                <a class="link" href="{{ route('profile',['user'=>$data->id]) }}" >
-                {{ $user->first_name.' '.$user->last_name }}</a>
+                {{ link(route('profile',['user'=>$data->id]),null , $user->first_name.' '.$user->last_name)}} 
              </span>
              <br>
          </td>
@@ -37,7 +31,10 @@
     <tr>
         <td colspan="5" class="text-center">
           @include('layout.pagination',['paginator' => $data['items']->appends(
-          ['page'=>Request::input('page'),'type'=>Request::input('type'),'direction'=>Request::input('direction'),'sortBy'=>Request::input('sortBy')])])
+          ['page'=>Request::input('page'),
+          'type'=>Request::input('type'),
+          'direction'=>Request::input('direction'),
+          'sortBy'=>Request::input('sortBy')])])
           </td>
       </tr>
 @endif

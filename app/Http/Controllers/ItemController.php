@@ -7,16 +7,22 @@ use App\Models\Item\Item;
 use App\Models\Room\Room;
 use App\Models\User\User;
 
-/*********************************************************************
+use App\Services\PurchaseService;
+use App\Services\RentService;
 
-                item --- ( index/show - STORE - UPDATE - DELETE ) 
-
-**********************************************************************/
+use App\Exceptions\PurchaseException;
+use App\Exceptions\RentException;
+use Exceptions\PolicyException;
 
 class ItemController extends Controller
 {
-	public function __construct(ItemInterface $item)
+  protected $PurchaseService;
+  protected $RentService;
+
+	public function __construct(PurchaseService $purchase,RentService $purchase, ItemInterface $item)
 	    {
+          $this->PurchaseService = $purchase;
+          $this->RentService = $rent;
 	        $this->model = $item;
 	    }
 /**
@@ -24,17 +30,14 @@ class ItemController extends Controller
  *  index Items
  *
  */
-  public function index()
+  public function index(IndexRequest $request)
     {
-      logger()->info(__METHOD__);
-       try {
-            $data['items'] = $this->model->Filter();
-            flash(trans('sovpal.flash.Confirm'),'success');           
+        try {
+            $data['items'] = $this->model->Filter($request);
             return view('index/main',compact($data));
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        } catch (NotFoundException $e) {
+            flash('NotFound','error'); 
+            return redirect()->back();
         }
     }
 /**
@@ -44,35 +47,22 @@ class ItemController extends Controller
  */
   public function show(Item $item)
     { 
-      logger()->info(__METHOD__);
-         try {
-           // if(is_null($item)) {abort('404'); }
-            $data = $this->model->byId();
-            flash(trans('sovpal.flash.Confirm'),'success');          
-            return view('one/main',compact($data));
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
+         return view('one/main',compact(['data'=>$item]));
     } 
 /**
  *
  *  store item
  *  
- *  TODO:
- *  - inject Room $room ( shop can add item in catalogs / owner dont need it ? )
  */
   public function store(ItemRequest $request)
     {
-      logger()->info(__METHOD__);
-         try {
-            $data = $this->model->storeItem();          
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        try{
+            $this->authorize('store', $item);
+            $this->currentUser->storeItem($request);          
+            return flash('Item successfully has been stored','success');
+        }
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
         }
     }
 /**
@@ -81,74 +71,87 @@ class ItemController extends Controller
  *  
  */
   public function update(ItemRequest $request,Item $item)    
-   {   
-      logger()->info(__METHOD__);
-         try {
-            $data =  $this->model->storeItem($item);          
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
-        }
+  {   
+      try{
+          $this->authorize('update', $item);
+          $this->currentUser->storeItem($request, $item);          
+          return flash('Item successfully has been updated','success');
+      }
+      catch(PolicyException $e){
+        return flash($e->getMessage(),'error');
+      }
    }
 /**
  *
- *  destroy item ( for shops or if item->type == tool/mat )
+ *  destroy item 
  *  
- *  TODO:
- *  - fix destroy form url in view ( owner removes item by addOrRemove method )
  */
   public function destroy(Item $item)        
      {
-      logger()->info(__METHOD__);
-         try {
-            $data =  $this->model->deleteModel($item);         
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        try{
+           $this->authorize('destroy', $item);
+           $this->currentUser->deleteModel($item);         
+           return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+          return flash($e->getMessage(),'error');
         }
      }    
 /**
  *
- *  add or remove item ( for owners )
+ *  purchase item 
  *  
- *  TODO:
- *  - check user_id = item->id in repo
- *  - owner add item in room ( inject Room $room )
  */
-  public function add(Item $item)
+  public function purchase(Item $item)
     {
-      logger()->info(__METHOD__);
-         try {
-            $data =  $this->model->addModel($this->currentUser,'orders',$item);         
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400); 
+        try{
+          $this->authorize('purchase', $item);
+            $this->PurchaseService->Purchase($item);
+            return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
+        }        
+        catch(PurchaseException $e){
+            return flash($e->getMessage(),'error');
         }
     }
 /**
  *
- *  add or remove item ( for owners )
+ *  rent item 
  *  
- *  TODO:
- *  - check user_id = item->id in repo
- *  - owner add item in room ( inject Room $room )
  */
-  public function remove(Item $item)
+  public function rent(Item $item)
     {
-        logger()->info(__METHOD__);
-         try {
-            $data =  $this->model->removeModel($this->currentUser,'orders',$item);     
-            return response()->json(['data' => $data, 'message' => "Success doing something"], 202);
-        } catch (\Exception $e) {
-            $message = sprintf("Error doing something %s", $e->getMessage());
-            Log::debug($message);
-            return response()->json(['data' => $data, 'message' => $message], 400);
+        try{
+          $this->authorize('purchase', $item);
+          $this->RentService->Rent($item);
+            return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
+        }        
+        catch(RentException $e){
+            return flash($e->getMessage(),'error');
+        }
+    }
+/**
+ *
+ *  return tool 
+ *  
+ */
+  public function return(Item $item)
+    {
+        try{
+            $this->authorize('remove', $item);
+            $this->RentService->return($item);     
+            return flash('Confirm','success');
+        }
+        catch(PolicyException $e){
+            return flash($e->getMessage(),'error');
+        }
+        catch(RentException $e){
+            return flash($e->getMessage(),'error');
         }
     }
 }

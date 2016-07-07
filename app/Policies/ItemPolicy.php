@@ -14,17 +14,37 @@ class ItemPolicy extends Policy
             logger()->info(__METHOD__);
             if(!$this->checkAuthor($item))
                 {
-                    throw new \Exception('User can not update this item');
+                    throw new PolicyException('User can not update this item');
                 }
             return true;
         }
     
-    public function delete($item)
+    public function destroy($item)
         {
             logger()->info(__METHOD__);
             if(!$this->checkAuthor($item))
                 {
-                    throw new \Exception('User can not delete item');
+                    throw new PolicyException('User can not delete item',$item);
+                }
+            return true;
+        }    
+
+    public function add($item)
+        {
+            logger()->info(__METHOD__);
+            if($this->checkAuthor($item))
+                {
+                    throw new PolicyException('User can not add own item');
+                }
+            return true;
+        }    
+
+    public function remove($item)
+        {
+            logger()->info(__METHOD__);
+            if($this->checkAuthor($item))
+                {
+                    throw new PolicyException('User can not remove own item');
                 }
             return true;
         }

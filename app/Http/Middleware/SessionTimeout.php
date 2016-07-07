@@ -3,16 +3,11 @@
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Session\Store;
+use App\Http\Middleware\AbstractMiddleware;
 
-class SessionTimeout 
+class SessionTimeout extends AbstractMiddleware
 {
-    protected $session;
     protected $timeout = 900;
-
-    public function __construct(Store $session)
-        {
-            $this->session=$session;
-        }
 
     public function handle($request, Closure $next)
         {
@@ -26,7 +21,6 @@ class SessionTimeout
             return $next($request);
         }
  
- //get from .env file or default
     protected function getTimeOut()
         {
             return (env('TIMEOUT')) ?: $this->timeout;

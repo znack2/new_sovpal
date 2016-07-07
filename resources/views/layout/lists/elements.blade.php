@@ -1,10 +1,7 @@
 @foreach($room['elements'] as $element)
  <tr>
      <td>
-         <div class="profile_button">
-           <img src="{{ asset('assets/images/elements/'.$element->getImage('element')) }}" 
-           class="button_image img-responsive" width="35px">
-         </div>
+         <div class="profile_button"> {{ image($element) }}</div> 
      </td>
      <td  style="padding-top: 30px;"><span class="maintext">{{ trans('tags.'.$element->name) }}</span></td>
      <td class="text-center" style="padding-top: 30px;">
@@ -15,7 +12,7 @@
  </tr>
 @endforeach
 
-@if($currentUser->id == $data->id)
+@if(checkCurrentUser($data->id))
   @include('layout.buttons.create_element',['element'=>null])
 @endif
 

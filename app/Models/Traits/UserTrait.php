@@ -47,6 +47,16 @@ trait UserTrait
         $this->currentUser->save();
         Session::put('currentUser',$this->currentUser);
         return true;
+    }
 
+
+    public function getShopIdAttribute()
+    {
+        return is_array($this->primaryKey) ? 0 : $this->attributes[$this->primaryKey];
+    }
+
+    public function getCart()
+    {
+        return $this->cart->first();
     }
 }

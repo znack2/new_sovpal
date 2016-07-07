@@ -16,7 +16,7 @@ class UserPolicy extends Policy
             logger()->info(__METHOD__);
             if($this->currentUser->id == $user->id)
         	{
-        	    throw new \Exception('User wrong author');
+        	    throw new PolicyException('User wrong author');
         	}
             return true;
         }

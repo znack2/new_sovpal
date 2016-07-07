@@ -9,7 +9,6 @@ use App\Models\_partials\Image;
 use App\Models\_partials\Tag;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
-use LogicException;
 
 class Base extends Model
 {
@@ -20,7 +19,6 @@ class Base extends Model
 
       public function images(){ return            $this->morphToMany(Image::class, 'imagged'); }
       public function tags(){ return              $this->morphToMany(Tag::class,   'tagged');}
-
 }
 
 

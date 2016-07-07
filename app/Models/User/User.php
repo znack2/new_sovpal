@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 use App\Models\_partials\Address;
+use App\Models\_partials\SocialAccount;
 use App\Models\Group\Group;
 use App\Models\Item\Item;
 use App\Models\Room\Room;
@@ -82,11 +83,11 @@ class User extends Base implements AuthenticatableContract,AuthorizableContract,
 
     public function join_groups(){return    $this->belongsToMany(Group::class)->withTimestamps()->withPivot('qty')->latest('pivot_updated_at');}
     public function addresses(){return      $this->belongsToMany(Address::class)->withTimestamps()->latest('pivot_updated_at');}
-    public function orders(){return         $this->belongsToMany(Item::class)->withTimestamps()->withPivot('how_long')->latest('pivot_updated_at');}
-
 
     public function Groups(){return         $this->HasMany(Group::class,'user_id')->orderBy('created_at');}
     public function Items(){return          $this->HasMany(Item::class, 'user_id')->orderBy('created_at');}
     public function Rooms(){return          $this->HasMany(Room::class,'user_id')->orderBy('updated_at');}
+    public function orders(){return         $this->HasMany(Order::class)->withTimestamps()->withPivot('how_long')->latest('pivot_updated_at');}
     
+    public function SocialAccount() {return $this->hasOne(SocialAccount::class); }
 }

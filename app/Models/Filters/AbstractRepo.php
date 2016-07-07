@@ -33,65 +33,20 @@ abstract class AbstractRepo implements AbstractInterface
   private function __construct(Builder $query, Model $model = null)
       {
           // firstOrCreate(['github_id', $githubUser->id], ['avatar' => $githubUser->avatar])
-              
           $this->model        = $model;
           $this->currentModel = $this->model->getMorphClass();
           $this->currentUser  = \Auth::user();
-          $this->request      = collect(Request::all());
           $this->query        = $query;
       }
 /**
  *
  *  create new room
- *  
- *  TODO: chech request return null???
  *
  */
-  public function Filter()
-      {
-        foreach ($this->request->all() as $name=>$value){
-          if(method_exists($this,$name)){
-            call_user_func_array([$this,$name],array_filter([$value]));
-          }
-        } 
-         return Cache::remember(array_keys($this->request), 10080, function(){
-              $this->query->count() > 1 ? $this->query->paginate(15) : $this->query->get();
-          });
-
-          //  $this->request->each(function ($value, $name) {
-          //     $this->getFilterFor($name)->filter($this->query, $value);
-          // });
-
-
-
-
-        // if users index in landing
-
-
-
-       $address = Address::where('street',$request['street'])->where('house',$request['house'])->first();
-
-      if($address->user_count != 0)
-        {
-           foreach($address->users as $user)
-            {
-              $response['name']    = $user->getFullName() ? 'Here should be your name!';
-              $response['image']   = asset('assets/images/users/'.$user->getImage('avatar'));
-            }
-              $response['message'] =  trans( 'sovpal.We have found' )
-                          .$address->user_count 
-                          .trans('sovpal.people around you,please registr to use webservice') ? 'You are first!' ;
-        }
-
-
-
-
-      }
+ 
 /**
  *
  *  create new room
- *  
- *  TODO:
  *
  */
   public function getExpire($date)
@@ -104,74 +59,54 @@ abstract class AbstractRepo implements AbstractInterface
 /**
  *
  *  order by field
- *  
- *  TODO:
- *  - check room complete
  *
  */
   public function getSortBy($sort,$order = 'desc')
     {
-       logger()->info(__METHOD__);
       return $this->model->orderBy($sort, $order);
     }  
 /**
  *
  *  by Field value
- *  
- *  TODO:
- *  - check room complete
  *
  */
   public function getlimitBy($field)
     {
-       logger()->info(__METHOD__);
-      return $this->model->where($field, '1');
+       return $this->model->where($field, '1');
     }
 /**
  *
  *  limit data
- *  
- *  TODO:
  *
  */
   public function take($count)
     {
-        logger()->info(__METHOD__);
         return $this->model->limit($count);
         // return skip($offset)->take($limit);
     }
 /**
  *
  *  By updated_at field
- *  
- *  TODO:
- *  - check room complete
  *
  */
   public function getRecent($order = 'desc')
     {
-       logger()->info(__METHOD__);
         return $this->model->orderBy('created_at',$order);
     }
 /**
  *
  *  By view_count field ( view )
- *  
- *  TODO:
- *  - check room complete
  *
  */
   public function getPopular($order ='desc')
     {
-       logger()->info(__METHOD__);
       return $this->model->orderBy('views',$order);
     }
 /**
  *
  *  By Private filed
  *  
- *  TODO:
- *  - check room complete
+
  *  - assign type_tag
  *  - assign style_tag
  *  - assign work_tag
@@ -198,13 +133,11 @@ abstract class AbstractRepo implements AbstractInterface
  *
  *  By Keyword(search)
  *  
- *  TODO:
- *  - check room complete
+
  *
  */
   public function ByKeyword($type,$field,$keyword)
      {
-      logger()->info(__METHOD__);
       if($type == 'groups'){
             $items = Item::with('groups')->where($field, 'LIKE', '%'.trim($keyword).'%')->get();
             $data = $items->groups();
@@ -219,14 +152,11 @@ abstract class AbstractRepo implements AbstractInterface
  *
  *  By Id
  *  
- *  TODO:
- *  - check room complete
+
  *
  */
   public function ById($id)
     {
-      logger()->info(__METHOD__);
-
       // DB::table('states')->where('states.id',1)
       //   ->join('countries','states.country_id','=','countries.id')
       //   ->select('countries.label as country','states.label as state')
@@ -242,15 +172,13 @@ abstract class AbstractRepo implements AbstractInterface
  *
  *  By Tag
  *  
- *  TODO:
- *  - check room complete
+
  *
  */
   public function ByTag($type,$name)
     {    
       //by tag-image english 
       //or use trans() tag-name?
-      logger()->info(__METHOD__);    
       if(! $tag = Tag::where('name',trim($name))->first())
         {
           throw new Exception('Data for "' . $tag . '" does not exist!');
@@ -263,13 +191,11 @@ abstract class AbstractRepo implements AbstractInterface
  *
  *  By Element
  *  
- *  TODO:
- *  - check room complete
+
  *
  */
   public function ByElement($type,$name)
     {        
-      logger()->info(__METHOD__);
       if(! $element = Element::where('name',trim($name))->first())
         {
           throw new Exception('Data for "' . $element . '" does not exist!');
@@ -282,8 +208,7 @@ abstract class AbstractRepo implements AbstractInterface
  *
  *  By Type field
  *  
- *  TODO:
- *  - check room complete
+
  *
  */
   public function ByType($type)
@@ -318,8 +243,7 @@ abstract class AbstractRepo implements AbstractInterface
  *
  *  By Address
  *  
- *  TODO:
- *  - check room complete
+
  *  - assign type_tag
  *  - assign style_tag
  *  - assign work_tag

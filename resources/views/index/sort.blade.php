@@ -31,7 +31,7 @@
      </div>
 
   <div class="col-md-5 col-sm-5 col-xs-7 menu_filter pull-right">
-      <div class="filter_item pull-right {{ Request::input('sortBy') == 'level' ||  Request::input('sortBy') == 'created_at' ? 'active': '' }}">
+      <div class="filter_item pull-right {{ active(route('items'),'level') || active(route('items'),'created_at') }}">
           <a class="link" href="{{ route(Request::route()->getName(),
                 ['type'=>Request::input('type'),
                  'tag'=>Request::input('tag'),
@@ -43,7 +43,8 @@
             <i class="fa fa-arrow-{{ Request::input('sortBy') == 'created_at' && Request::input('direction') == 'desc' ? 'down'  : 'up'}}"></i>
       </div>
 
-      <div class="filter_item pull-right {{ Request::input('sortBy') == 'default_price' ||  Request::input('sortBy') == 'hour_cost' ||  Request::input('sortBy') == 'first_name'? 'active': '' }}">
+      <div class="filter_item pull-right {{ active(route('items'),'price') || active(route('items'),'hour_cost') ||
+      active(route('items'),'first_name')  }}">
             <a class="link" href="{{ route(Request::route()->getName(),
              ['type'=>Request::input('type'),
              'tag'=>Request::input('tag'), 

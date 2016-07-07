@@ -1,5 +1,6 @@
 <?php
 
+//use if not able to use .env
 return [
 
     'mailgun' => [
@@ -34,6 +35,12 @@ return [
         'client_id'       => env('VKONTAKTE_KEY'),
         'client_secret'    => env('VKONTAKTE_SECRET'),
         'redirect'         => env('VKONTAKTE_REDIRECT_URI'),
+    ],
+
+    'ok' => [
+        'client_id'       => env('OK_KEY'),
+        'client_secret'    => env('OK_SECRET'),
+        'redirect'         => env('OK_REDIRECT_URI'),
     ],
 
 ];
