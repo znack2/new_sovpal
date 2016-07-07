@@ -5,11 +5,10 @@ node_modules/
 app/storage/
 bootstrap/cache/
 bootstrap/compiled.php
-tests/.workflow
 
 .env.*.php
 .env.php
-.env
+.env.production
 Homestead.yaml
 Homestead.json
 *.sublime-project
